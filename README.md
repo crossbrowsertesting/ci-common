@@ -4,7 +4,7 @@
 
 ### To include in your project
 #### normal java project
-- easiest method is to import the jar file in the target directory
+easiest method is to import the jar file located within the target directory
 #### maven project
 - for a maven project you can add it as a dependency in your pom.xml file
 - the jar is publicly hosted with [JitPack.io](https://jitpack.io#crossbrowsertesting/ci-common)
