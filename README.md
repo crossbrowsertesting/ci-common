@@ -3,7 +3,29 @@
 - made specifically for the Continuous Integration plugins but might be useful elsewhere also
 
 ### To include in your project
+#### normal java project
 - easiest method is to import the jar file in the target directory
+#### maven project
+- for a maven project you can add it as a dependency in your pom.xml file
+- the jar is publicly hosted with [JitPack.io](https://jitpack.io#crossbrowsertesting/ci-common)
+
+Just add this to your pom.xml
+```xml	
+<repositories>
+  <repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+  </repository>
+</repositories>
+<dependencies>
+  <dependency>
+    <groupId>com.github.crossbrowsertesting</groupId>
+    <artifactId>ci-common</artifactId>
+    <version>v0.1.0</version>
+  </dependency>
+</dependencies>
+```
+The version will need to match the release tag
 
 ### For Development
 - Java >= 8
