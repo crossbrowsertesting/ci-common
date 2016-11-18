@@ -12,6 +12,7 @@ public class OperatingSystem extends InfoPrototype{
 	@Deprecated
 	public List<Browser> browsers = new ArrayList<Browser>();
 	
+	// keys are api_names - values are names
 	public Map<String, Resolution> resolutions2 = new HashMap<String, Resolution>(); 
 	public Map<String, Browser> browsers2 = new HashMap<String, Browser>();
 	

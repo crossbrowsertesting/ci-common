@@ -4,8 +4,10 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -120,7 +122,7 @@ public class Selenium {
 		return browser.getName();
 	}
 	@Deprecated
-	public String[] getSeleniumTestInfo(String name, String build, String browserApiName, String osApiName, String resolution) throws IOException {
+	public Queue<Map<String, String>> getSeleniumTestInfo(String name, String build, String browserApiName, String osApiName, String resolution) throws IOException {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("name", name);
 		params.put("build", build);
@@ -131,18 +133,9 @@ public class Selenium {
 		params.put("browser", browser);
 		params.put("resolution",resolution);
 		String json = req.get("", params);
-		
-		//got the test now need to parse out the id and publicUrl
-		JSONObject j = new JSONObject(json);
-		JSONArray seleniumTests = j.getJSONArray("selenium");
-		JSONObject seleniumTest = seleniumTests.getJSONObject(0);
-		int seleniumTestId = seleniumTest.getInt("selenium_test_id");
-		String publicUrl = seleniumTest.getString("show_result_public_url");
-		String[] testInfo = {Integer.toString(seleniumTestId), publicUrl};
-		return testInfo;
-		
+		return parseIdAndPublicUrl(json);
 	}
-	public String[] getSeleniumTestInfo2(String name, String build, String browserApiName, String osApiName, String resolution) throws IOException {
+	public Queue<Map<String, String>> getSeleniumTestInfo2(String name, String build, String browserApiName, String osApiName, String resolution) throws IOException {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("name", name);
 		params.put("build", build);
@@ -151,16 +144,23 @@ public class Selenium {
 		params.put("browser", os.browsers2.get("browserApiName").getName());
 		params.put("resolution",resolution);
 		String json = req.get("", params);
-		
+		return parseIdAndPublicUrl(json);
+	}
+	private Queue<Map<String, String>> parseIdAndPublicUrl(String json) {
 		//got the test now need to parse out the id and publicUrl
 		JSONObject j = new JSONObject(json);
 		JSONArray seleniumTests = j.getJSONArray("selenium");
-		JSONObject seleniumTest = seleniumTests.getJSONObject(0);
-		int seleniumTestId = seleniumTest.getInt("selenium_test_id");
-		String publicUrl = seleniumTest.getString("show_result_public_url");
-		String[] testInfo = {Integer.toString(seleniumTestId), publicUrl};
-		return testInfo;
-		
+		Queue<Map<String, String>> tests = new LinkedList<Map<String, String>>();
+		for(int i=0; i< seleniumTests.length();i++) {
+			JSONObject seleniumTest = seleniumTests.getJSONObject(i);
+			int seleniumTestId = seleniumTest.getInt("selenium_test_id");
+			String publicUrl = seleniumTest.getString("show_result_public_url");
+			Map<String, String> testInfo = new HashMap<String, String>();
+			testInfo.put("selenium_test_id", Integer.toString(seleniumTestId));
+			testInfo.put("show_result_public_url", publicUrl);
+			tests.add(testInfo);
+		}
+		return tests;
 	}
 	private String apiSetAction(String seleniumTestId, String action, String param, String value) throws IOException {
 		/*
