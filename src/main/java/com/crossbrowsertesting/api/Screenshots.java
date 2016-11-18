@@ -11,7 +11,7 @@ import org.json.JSONObject;
 public class Screenshots {
 
 	private String username, apikey;
-	List<String> browserLists; // only need browserlist right now. may need the actual list of available browsers in the future
+	public List<String> browserLists; // only need browserlist right now. may need the actual list of available browsers in the future
 	Request req;
 	
 	public Screenshots(String user, String key) {
@@ -64,7 +64,7 @@ public class Screenshots {
 			results.put("download_results_zip_public_url", latestScreenshotVersion.getString("download_results_zip_public_url"));
 			results.put("show_results_public_url", latestScreenshotVersion.getString("show_results_public_url"));
 			results.put("active", Boolean.toString(latestScreenshotVersion.getBoolean("active")));
-		}catch (Exception e) {
+		} catch (Exception e) {
 			results.put("error", e.toString());
 			results.put("json", json);
 		}

@@ -41,6 +41,15 @@ public class LocalTunnel {
 			return false;
 		}
 	}
+	public void start(String nodePath, String localTunnelPath) throws IOException {
+		/*
+		 * Runs a subprocess that starts the node local tunnel
+		 */
+		String tunnelCommand = nodePath + " " + localTunnelPath + " --username " + username + " --authkey " +apikey;
+		tunnelProcess = Runtime.getRuntime().exec(tunnelCommand);
+		jenkinsStartedTunnel = true;
+		pluginStartedTheTunnel = true;	
+	}
 	public void start() throws IOException {
 		/*
 		 * Runs a subprocess that starts the node local tunnel
