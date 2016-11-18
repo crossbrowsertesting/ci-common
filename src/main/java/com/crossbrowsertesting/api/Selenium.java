@@ -23,7 +23,7 @@ public class Selenium {
 	private Request req = new Request("selenium");
 	
 	@Deprecated
-	public List<OperatingSystem> operatingSystems = new ArrayList<OperatingSystem>();
+	public List<OperatingSystem> operatingSystems = new LinkedList<OperatingSystem>();
 	public Map<String, OperatingSystem> operatingSystems2 = new HashMap<String, OperatingSystem>(); //getting from a Map is O(1)
 	
 	public Selenium() {
@@ -141,7 +141,7 @@ public class Selenium {
 		params.put("build", build);
 		OperatingSystem os = operatingSystems2.get(osApiName);
 		params.put("os", os.getName());
-		params.put("browser", os.browsers2.get("browserApiName").getName());
+		params.put("browser", os.browsers2.get(browserApiName).getName());
 		params.put("resolution",resolution);
 		String json = req.get("", params);
 		return parseIdAndPublicUrl(json);
