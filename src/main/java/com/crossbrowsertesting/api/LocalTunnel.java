@@ -8,7 +8,9 @@ import org.json.JSONObject;
 public class LocalTunnel {
 	private Request req;
 	public boolean isTunnelRunning = false;
-	public boolean jenkinsStartedTheTunnel = false;
+	@Deprecated
+	public boolean jenkinsStartedTunnel = false; // variable name change
+	public boolean pluginStartedTheTunnel = false;
 	public Process tunnelProcess;
 	public int tunnelID;
 	private String username, apikey;
@@ -40,14 +42,23 @@ public class LocalTunnel {
 		}
 	}
 	public void start() throws IOException {
+		/*
+		 * Runs a subprocess that starts the node local tunnel
+		 */
 		String tunnelCommand = "cbt_tunnels --username " + username + " --authkey " +apikey;
 		tunnelProcess = Runtime.getRuntime().exec(tunnelCommand);
-		jenkinsStartedTheTunnel = true;
+		jenkinsStartedTunnel = true;
+		pluginStartedTheTunnel = true;
 	}
 	public void stop() throws IOException, InterruptedException {
+		/*
+		 * Stops the tunnel if the plugin started it
+		 */
 		queryTunnel();
 		@SuppressWarnings("unused")
 		String json = req.delete("/"+Integer.toString(tunnelID), null);
-		tunnelProcess.destroy();
+		if (pluginStartedTheTunnel) {
+			tunnelProcess.destroy();
+		}
 	}
 }
