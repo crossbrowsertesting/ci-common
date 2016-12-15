@@ -45,12 +45,12 @@ class Request {
 	public Request(String path) {		
 		requestURL += path;
 	}
-	void setProxy(String url, int port) {
+	public void setProxy(String url, int port) {
 		this.proxyUrl = url;
 		this.proxyPort = port;
 		useProxy = true;
 	}
-	void setProxyCredentials(String username, String password) {
+	public void setProxyCredentials(String username, String password) {
 		this.proxyUsername = username;
 		this.proxyPassword = password;
 		useProxyCredentials = true;
