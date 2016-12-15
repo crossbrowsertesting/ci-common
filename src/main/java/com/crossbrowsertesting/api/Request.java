@@ -21,7 +21,7 @@ import org.apache.commons.codec.binary.Base64;
  * Not intended to be directly imported and instantiated into your project
  * Might consider making it abstract and having API classes like "Selenium" or "Screenshots" extend from it
  */
-class Request {
+public class Request {
 	
 	String username = null;
 	String password = null;
