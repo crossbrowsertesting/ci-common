@@ -26,29 +26,26 @@ public class Selenium extends ApiFactory{
 	
 	public Selenium() {
 		super("selenium");
-		String json="";
-		try {
-			json = req.get("/browsers");
-		}catch (IOException ioe) {}
-		try {
-			populateConfigurations(json);
-		}catch (JSONException jsone) {}
+		init();
 		
 	}
 	public Selenium(String username, String apikey) {
 		super("selenium", username, apikey);
+		init();
+		
+	}
+	public void init() {
 		String json="";
 		try {
 			json = req.get("/browsers");
 		}catch (IOException ioe) {}
 		try {
 			populateConfigurations(json);
-		}catch (JSONException jsone) {}
-		
+		}catch (JSONException jsone) {}	
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void populateConfigurations(String json) throws JSONException {
+	private void populateConfigurations(String json) throws JSONException {
 		JSONArray j_configurations = new JSONArray(json);
 		for(int i=0; i<j_configurations.length();i++) {
 			//parse out the OS info

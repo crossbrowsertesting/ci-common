@@ -18,6 +18,9 @@ public class LocalTunnel extends ApiFactory {
 		super("tunnels", username, apikey);
 		this.username = username;
 		this.apikey = apikey;
+		init();
+	}
+	public void init() {
 		queryTunnel();
 	}
 	public boolean queryTunnel() throws JSONException {

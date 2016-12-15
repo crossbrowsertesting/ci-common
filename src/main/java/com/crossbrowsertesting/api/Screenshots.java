@@ -15,6 +15,9 @@ public class Screenshots extends ApiFactory{
 	public Screenshots(String username, String apikey) {
 		super("screenshots", username, apikey);		
 		browserLists = new LinkedList<String>();
+		init();	
+	}
+	public void init() {
 		populateBrowserLists();
 	}
 	private void populateBrowserLists() {

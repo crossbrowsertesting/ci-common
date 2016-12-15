@@ -22,5 +22,5 @@ public abstract class ApiFactory {
 	public Request getRequest() {
 		return req;
 	}
-	
+	public abstract void init();
 }

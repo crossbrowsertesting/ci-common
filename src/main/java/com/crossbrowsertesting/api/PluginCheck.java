@@ -16,6 +16,9 @@ public class PluginCheck extends ApiFactory{
 		this.contributerVersion = contributerVersion;
 		this.pluginVersion = pluginVersion;
 	}
+	public void init() {
+		
+	}
 	public boolean needToUpgradeFake() throws IOException{
 		return false;
 	}
