@@ -5,8 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LocalTunnel {
-	private Request req;
+public class LocalTunnel extends ApiFactory {
 	public boolean isTunnelRunning = false;
 	@Deprecated
 	public boolean jenkinsStartedTunnel = false; // variable name change
@@ -16,9 +15,9 @@ public class LocalTunnel {
 	private String username, apikey;
 	
 	public LocalTunnel(String username, String apikey) {
+		super("tunnels", username, apikey);
 		this.username = username;
 		this.apikey = apikey;
-		req = new Request("tunnels", username, apikey);
 		queryTunnel();
 	}
 	public boolean queryTunnel() throws JSONException {

@@ -5,14 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONObject;
 
-public class PluginCheck {
-	private Request req = new Request("plugins");
-	
+public class PluginCheck extends ApiFactory{	
 	private String contributer;
 	private String contributerVersion;
 	private String pluginVersion;
 	
 	public PluginCheck(String contributer, String contributerVersion, String pluginVersion) {
+		super("plugins");
 		this.contributer = contributer;
 		this.contributerVersion = contributerVersion;
 		this.pluginVersion = pluginVersion;

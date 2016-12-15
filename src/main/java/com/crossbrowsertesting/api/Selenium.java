@@ -15,18 +15,17 @@ import org.json.JSONObject;
 
 import com.crossbrowsertesting.configurations.*;
 
-public class Selenium {
+public class Selenium extends ApiFactory{
 	/*
 	 * List of browsers for selenium testing
 	 */
-
-	private Request req = new Request("selenium");
 	
 	@Deprecated
 	public List<OperatingSystem> operatingSystems = new LinkedList<OperatingSystem>();
 	public Map<String, OperatingSystem> operatingSystems2 = new HashMap<String, OperatingSystem>(); //getting from a Map is O(1)
 	
 	public Selenium() {
+		super("selenium");
 		String json="";
 		try {
 			json = req.get("/browsers");
@@ -37,7 +36,7 @@ public class Selenium {
 		
 	}
 	public Selenium(String username, String apikey) {
-		req = new Request("selenium", username, apikey);
+		super("selenium", username, apikey);
 		String json="";
 		try {
 			json = req.get("/browsers");
@@ -47,12 +46,9 @@ public class Selenium {
 		}catch (JSONException jsone) {}
 		
 	}
-	public void setRequest(String username, String apikey) {
-		req = new Request("selenium", username, apikey);
-	}
 	
 	@SuppressWarnings("deprecation")
-	private void populateConfigurations(String json) throws JSONException {
+	public void populateConfigurations(String json) throws JSONException {
 		JSONArray j_configurations = new JSONArray(json);
 		for(int i=0; i<j_configurations.length();i++) {
 			//parse out the OS info

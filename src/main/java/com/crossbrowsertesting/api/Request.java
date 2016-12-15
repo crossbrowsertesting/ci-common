@@ -4,8 +4,12 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.net.Proxy;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -22,6 +26,14 @@ class Request {
 	String username = null;
 	String password = null;
 	
+	//proxy settings
+	boolean useProxy = false;
+	String proxyUrl;
+	int proxyPort;
+	boolean useProxyCredentials = false; 
+	String proxyUsername;
+	String proxyPassword;
+	
 	private String requestURL = "https://crossbrowsertesting.com/api/v3/";
 	
 	Request(String path, String username, String password) {
@@ -32,16 +44,33 @@ class Request {
 	}
 	public Request(String path) {		
 		requestURL += path;
-	}	
-	public Request() {}
+	}
+	void setProxy(String url, int port) {
+		this.proxyUrl = url;
+		this.proxyPort = port;
+		useProxy = true;
+	}
+	void setProxyCredentials(String username, String password) {
+		this.proxyUsername = username;
+		this.proxyPassword = password;
+		useProxyCredentials = true;
+	}
 	
 	public String get(String urlStr) throws IOException{
 		/*
 		 * Get request
 		 * returns JSON as a string
 		 */
-		URL url = new URL(requestURL + urlStr);
+		String requestString = requestURL + urlStr;
+		URL url = new URL(requestString);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		if (useProxy) {
+			Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUrl, proxyPort));
+			conn = (HttpURLConnection) url.openConnection(proxy);
+			if (useProxyCredentials) {
+				Authenticator.setDefault(new SimpleAuthenticator(proxyUsername, proxyPassword));
+			}
+		}
 		conn.setRequestMethod("GET");
 		if (username != null && password != null) {
 			String userpassEncoding = Base64.encodeBase64String((username+":"+password).getBytes());
@@ -92,6 +121,10 @@ class Request {
     	byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
 		URL url = new URL(requestURL + urlStr);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		if (useProxy) {
+			Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUrl, proxyPort));
+			conn = (HttpURLConnection) url.openConnection(proxy);
+		}
 		conn.setRequestMethod(method);
 		if (username != null && password != null) {
 			String userpassEncoding = Base64.encodeBase64String((username+":"+password).getBytes());
@@ -129,5 +162,16 @@ class Request {
 	}
 	public String delete(String urlStr, Map<String, String> params) throws IOException {
 		return doRequestWithFormParams("DELETE", urlStr, params);
+	}
+}
+final class SimpleAuthenticator extends Authenticator {
+	private String username;
+	private String password;
+	SimpleAuthenticator(String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
+	protected PasswordAuthentication getPasswordAuthtication() {
+		return new PasswordAuthentication(username, password.toCharArray());
 	}
 }

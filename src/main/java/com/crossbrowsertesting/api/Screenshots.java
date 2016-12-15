@@ -8,17 +8,12 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class Screenshots {
+public class Screenshots extends ApiFactory{
 
-	private String username, apikey;
 	public List<String> browserLists; // only need browserlist right now. may need the actual list of available browsers in the future
-	Request req;
 	
-	public Screenshots(String user, String key) {
-		this.username = user;
-		this.apikey = key;
-		req = new Request("screenshots", username, apikey);
-		
+	public Screenshots(String username, String apikey) {
+		super("screenshots", username, apikey);		
 		browserLists = new LinkedList<String>();
 		populateBrowserLists();
 	}
