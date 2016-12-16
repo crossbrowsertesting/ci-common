@@ -43,23 +43,35 @@ public class LocalTunnel extends ApiFactory {
 			return false;
 		}
 	}
-	public void start(String nodePath, String localTunnelPath) throws IOException {
+	private void start(String tunnelCommand) throws IOException {
+		/*
+		 * Actually runs the tunnel process.
+		 * The others just expose common parameters for the tunnel
+		 */
+		tunnelProcess = Runtime.getRuntime().exec(tunnelCommand);
+		jenkinsStartedTunnel = true;
+		pluginStartedTheTunnel = true;
+	}
+	public void start(String nodePath, String localTunnelPath) throws IOException{
 		/*
 		 * Runs a subprocess that starts the node local tunnel
 		 */
-		String tunnelCommand = nodePath + " " + localTunnelPath + " --username " + username + " --authkey " +apikey;
-		tunnelProcess = Runtime.getRuntime().exec(tunnelCommand);
-		jenkinsStartedTunnel = true;
-		pluginStartedTheTunnel = true;	
+		String tunnelCommand = nodePath + " " + localTunnelPath + " --username " + username + " --authkey " + apikey;
+		start(tunnelCommand);
 	}
 	public void start() throws IOException {
 		/*
 		 * Runs a subprocess that starts the node local tunnel
 		 */
-		String tunnelCommand = "cbt_tunnels --username " + username + " --authkey " +apikey;
-		tunnelProcess = Runtime.getRuntime().exec(tunnelCommand);
-		jenkinsStartedTunnel = true;
-		pluginStartedTheTunnel = true;
+		String tunnelCommand = "cbt_tunnels --username " + username + " --authkey " + apikey;
+		if (req.useProxy) {
+			String proxyUrl = req.proxyUrl;
+			if (req.useProxyCredentials) {
+				proxyUrl = req.proxyUsername + ":" + req.proxyPassword + "@" + proxyUrl;
+			}
+			tunnelCommand += " --proxyIp " + proxyUrl + " --proxyPort " + req.proxyPort;
+		}
+		start(tunnelCommand);
 	}
 	public void stop() throws IOException, InterruptedException {
 		/*
