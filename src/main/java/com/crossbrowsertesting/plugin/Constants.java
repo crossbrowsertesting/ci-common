@@ -17,6 +17,9 @@ public final class Constants {
 	public static final String RESOLUTION = "CBT_RESOLUTION";
 	public static final String BROWSERNAME = "CBT_BROWSERNAME";
 	
+	// Display name for CI
+	public static final String DISPLAYNAME = "Crossbrowsertesting.com";
+	
 	// Contributers
 	public static final String TEAMCITY_CONTRIBUTER = "teamcity";
 	public static final String JENKINS_CONTRIBUTER = "jenkins";
