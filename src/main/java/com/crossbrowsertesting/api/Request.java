@@ -104,7 +104,7 @@ public class Request {
 	}
 	private String doRequestWithFormParams(String method, String urlStr, Map<String, String> params) throws IOException {
 		/*
-		 * POST or Post request
+		 * any general request with form data parameters ie. POST, DELETE, PUT
 		 * returns JSON as a string
 		 */
 		String urlParameters = "";
@@ -124,6 +124,9 @@ public class Request {
 		if (useProxy) {
 			Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUrl, proxyPort));
 			conn = (HttpURLConnection) url.openConnection(proxy);
+			if (useProxyCredentials) {
+				Authenticator.setDefault(new SimpleAuthenticator(proxyUsername, proxyPassword));
+			}
 		}
 		conn.setRequestMethod(method);
 		if (username != null && password != null) {

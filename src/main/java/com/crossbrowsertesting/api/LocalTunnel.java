@@ -1,6 +1,9 @@
 package com.crossbrowsertesting.api;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,35 +46,42 @@ public class LocalTunnel extends ApiFactory {
 			return false;
 		}
 	}
-	private void start(String tunnelCommand) throws IOException {
+	private void start(String tunnelLaunchCommand, Map<String, String> params) throws IOException {
 		/*
 		 * Actually runs the tunnel process.
 		 * The others just expose common parameters for the tunnel
 		 */
+		params.put(" --username ", username);
+		params.put(" --authkey ", apikey);
+		if (req.useProxy) {
+			params.put(" --proxyPort ", Integer.toString(req.proxyPort));
+			String proxyUrl = req.proxyUrl;
+			if (req.useProxyCredentials) {
+				proxyUrl = req.proxyUsername + ":" + req.proxyPassword + "@" + proxyUrl;
+			}
+			params.put(" --proxyIp ", proxyUrl);
+		}
+		String tunnelParams = "";
+		for (Map.Entry<String, String> entry : params.entrySet()) {
+			tunnelParams += entry.getKey() + entry.getValue();
+		}
+		String tunnelCommand = tunnelLaunchCommand + tunnelParams;
+		System.out.println(tunnelCommand);
 		tunnelProcess = Runtime.getRuntime().exec(tunnelCommand);
 		jenkinsStartedTunnel = true;
 		pluginStartedTheTunnel = true;
 	}
-	public void start(String nodePath, String localTunnelPath) throws IOException{
+	public void start(String localTunnelPath) throws IOException{
 		/*
 		 * Runs a subprocess that starts the node local tunnel
 		 */
-		String tunnelCommand = nodePath + " " + localTunnelPath + " --username " + username + " --authkey " + apikey;
-		start(tunnelCommand);
+		start(localTunnelPath, new HashMap<String, String>());
 	}
 	public void start() throws IOException {
 		/*
 		 * Runs a subprocess that starts the node local tunnel
 		 */
-		String tunnelCommand = "cbt_tunnels --username " + username + " --authkey " + apikey;
-		if (req.useProxy) {
-			String proxyUrl = req.proxyUrl;
-			if (req.useProxyCredentials) {
-				proxyUrl = req.proxyUsername + ":" + req.proxyPassword + "@" + proxyUrl;
-			}
-			tunnelCommand += " --proxyIp " + proxyUrl + " --proxyPort " + req.proxyPort;
-		}
-		start(tunnelCommand);
+		start("cbt_tunnels", new HashMap<String, String>());
 	}
 	public void stop() throws IOException, InterruptedException {
 		/*
