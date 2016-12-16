@@ -66,7 +66,6 @@ public class LocalTunnel extends ApiFactory {
 			tunnelParams += entry.getKey() + entry.getValue();
 		}
 		String tunnelCommand = tunnelLaunchCommand + tunnelParams;
-		System.out.println(tunnelCommand);
 		tunnelProcess = Runtime.getRuntime().exec(tunnelCommand);
 		jenkinsStartedTunnel = true;
 		pluginStartedTheTunnel = true;
