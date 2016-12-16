@@ -40,6 +40,8 @@ public class Selenium extends ApiFactory{
 			json = req.get("/browsers");
 		}catch (IOException ioe) {}
 		try {
+			operatingSystems = new LinkedList<OperatingSystem>();
+			operatingSystems2 = new HashMap<String, OperatingSystem>();
 			populateConfigurations(json);
 		}catch (JSONException jsone) {}	
 	}
