@@ -14,10 +14,11 @@ public class Screenshots extends ApiFactory{
 	
 	public Screenshots(String username, String apikey) {
 		super("screenshots", username, apikey);		
-		browserLists = new LinkedList<String>();
+		
 		init();	
 	}
 	public void init() {
+		browserLists = new LinkedList<String>();
 		populateBrowserLists();
 	}
 	private void populateBrowserLists() {
@@ -25,16 +26,17 @@ public class Screenshots extends ApiFactory{
 		String json="";
 		try {
 			json = req.get("/browserlists");
+			JSONArray j_browserLists = new JSONArray(json);
+			for(int i=0; i<j_browserLists.length();i++) {
+				JSONObject j_browserList = j_browserLists.getJSONObject(i);
+				String browser_list_name = j_browserList.getString("browser_list_name");
+				browserLists.add(browser_list_name);
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		JSONArray j_browserLists = new JSONArray(json);
-		for(int i=0; i<j_browserLists.length();i++) {
-			JSONObject j_browserList = j_browserLists.getJSONObject(i);
-			String browser_list_name = j_browserList.getString("browser_list_name");
-			browserLists.add(browser_list_name);
-		}
+
 	}
 	public HashMap<String, String> runScreenshotTest(String selectedBrowserList, String url) {
 		String json = "";
