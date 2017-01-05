@@ -6,7 +6,7 @@ import junit.framework.TestSuite;
 import com.crossbrowsertesting.api.LocalTunnel;
 
 /**
- * Unit test for Selenium
+ * Unit test for LocalTunnel
  */
 public class LocalTunnelTest extends TestCase {
     /**
@@ -14,8 +14,6 @@ public class LocalTunnelTest extends TestCase {
      *
      * @param testName name of the test case
      */
-    LocalTunnel herp = new LocalTunnel("tunneluser1","password","aTunnelName");
-    LocalTunnel derp = new LocalTunnel("tunneluser1","password");
 	
     public LocalTunnelTest( String testName )
     {
@@ -33,11 +31,17 @@ public class LocalTunnelTest extends TestCase {
     /*
      * Checks that browsers are not empty
      */
+    /*
     @SuppressWarnings("deprecation")
+    LocalTunnel herp = new LocalTunnel("mikeh","illnevertell","aTunnel");
 	public void testLaunchAndTestLocalNamedTunnel() {
         assertTrue( herp.isTunnelRunning );
     }
     public void testLaunchAndTestLocalUnnamedTunnel() {
+        LocalTunnel derp = new LocalTunnel("mikeh","illnevertell");
+
         assertTrue( derp.isTunnelRunning );
     }
+    */
+ 
 }

@@ -62,20 +62,14 @@ public class LocalTunnel extends ApiFactory {
 		}else{
 			tunnelID = getTunnelID();
 		} 
-		System.out.println("Tunnel ID:");
-		System.out.println(tunnelID);
 		//make sure tunnelID is not -1
 		String json = "";
 		try{
-			System.out.println("Checking tunnel "+tunnelID);
 			json = req.get("/"+Integer.toString(tunnelID)+"/check");
 		}catch(IOException ioe){
-			System.out.println("Check tunnel failed:");
 			ioe.printStackTrace();
 			return false;
 		}
-		System.out.println("JSON from tunnel check:");
-		System.out.println(json);
 		try{
 			JSONObject res = new JSONObject(json);
 			boolean isActive = res.getBoolean("connected");
@@ -87,50 +81,41 @@ public class LocalTunnel extends ApiFactory {
 	}
 
 	private int getTunnelID() throws JSONException {
-		System.out.println("This is getting a tunnel ID without a tunnel name");
 		String json = "";
 		try{
-			System.out.println("Getting active tunnels");
 			json = req.get("?active=true");
 		}catch(IOException ioe){
-			System.out.println("Failed to get active tunnels:");
 			ioe.printStackTrace();
 			return -1;
 		}
-		System.out.println("Active tunnel JSON:");
-		System.out.println(json);
 		try{
 			JSONObject res = new JSONObject(json);
 			JSONArray tunnels = res.getJSONArray("tunnels");
 			JSONObject unnamedTunnel = null;
 			for(int i=0;i<tunnels.length();i++){
 				JSONObject tunnel = tunnels.getJSONObject(i);
-				System.out.println("Tunnel name:");
-				System.out.println(tunnel.getString("tunnel_name"));
-				if(tunnel.getString("tunnel_name").equals("")){
+				if(tunnel.isNull("tunnel_name")){
 					unnamedTunnel = tunnel;
 					break;
 				}
 			}
-			if(unnamedTunnel!=null){
+			if(unnamedTunnel!=null) {
 				int tunnelID = unnamedTunnel.getInt("tunnel_id");
 				return tunnelID;
 			}else{
 				return -1;
 			}
 		}catch(JSONException jsone){
+			jsone.printStackTrace();
 			return -1;
 		}
 	}
 
 	private int getTunnelID(String tunnelname) throws JSONException {
-		System.out.println("This is getting a tunnel ID with a tunnel name");
 		String json = "";
 		try{
-			System.out.println("Getting active tunnels");
 			json = req.get("?active=true");
 		}catch(IOException ioe){
-			System.out.println("Failed to get active tunnels:");
 			ioe.printStackTrace();
 			return -1;
 		}
@@ -164,6 +149,9 @@ public class LocalTunnel extends ApiFactory {
 		 */
 		params.put(" --username ", username);
 		params.put(" --authkey ", apikey);
+		if (this.tunnelname != null && !this.tunnelname.equals("")) { 
+			params.put(" --tunnelname ", tunnelname);
+		}
 		if (req.useProxy) {
 			params.put(" --proxyPort ", Integer.toString(req.proxyPort));
 			String proxyUrl = req.proxyUrl;
