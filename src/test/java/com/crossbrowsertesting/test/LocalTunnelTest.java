@@ -33,12 +33,12 @@ public class LocalTunnelTest extends TestCase {
      */
     /*
     @SuppressWarnings("deprecation")
-    LocalTunnel herp = new LocalTunnel("mikeh","illnevertell","aTunnel");
+    LocalTunnel herp = new LocalTunnel("","","aTunnel");
 	public void testLaunchAndTestLocalNamedTunnel() {
         assertTrue( herp.isTunnelRunning );
     }
     public void testLaunchAndTestLocalUnnamedTunnel() {
-        LocalTunnel derp = new LocalTunnel("mikeh","illnevertell");
+        LocalTunnel derp = new LocalTunnel("","");
 
         assertTrue( derp.isTunnelRunning );
     }
