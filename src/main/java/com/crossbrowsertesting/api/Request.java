@@ -34,7 +34,7 @@ public class Request {
 	String proxyUsername;
 	String proxyPassword;
 	
-	private String requestURL = "https://test.crossbrowsertesting.com/api/v3/";
+	private String requestURL = "https://crossbrowsertesting.com/api/v3/";
 	
 	Request(String path, String username, String password) {
 		this.username = username;
