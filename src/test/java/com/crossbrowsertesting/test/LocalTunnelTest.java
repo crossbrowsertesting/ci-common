@@ -43,7 +43,7 @@ public class LocalTunnelTest extends TestCase {
         assertTrue( derp.isTunnelRunning );
     }
     */
-    public void alwaysTrue() {
+    public void testAlwaysTrue() {
         assertTrue(true);
     }
 }
