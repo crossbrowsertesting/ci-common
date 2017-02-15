@@ -1,49 +1,68 @@
 package com.crossbrowsertesting.test;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import java.io.IOException;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Test;
 import com.crossbrowsertesting.api.LocalTunnel;
+
 
 /**
  * Unit test for LocalTunnel
  */
-public class LocalTunnelTest extends TestCase {
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
+public class LocalTunnelTest extends APITestFactory {
+
+	LocalTunnel tunnel;
 	
-    public LocalTunnelTest( String testName )
-    {
-        super( testName );
-    }
-
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( LocalTunnelTest.class );
-    }
-
-    /*
-     * Checks that browsers are not empty
-     */
-    /*
-    @SuppressWarnings("deprecation")
+	@Before
+	public void set() {
+		tunnel = new LocalTunnel(username, apikey);
+		try {
+			tunnel.start();
+		} catch (IOException e) {
+			Assume.assumeNoException("Could not start the tunnel", e);
+		}
+	}
+	@After
+	public void clear() {
+		/*
+		try {
+			tunnel.stop();
+		} catch (IOException e) {
+			Assume.assumeNoException("Could not stop the tunnel", e);
+		} catch (InterruptedException e) {
+			Assume.assumeNoException("Could not stop the tunnel", e);
+		}
+		tunnel = null;
+		*/
+	}
+	/*
     LocalTunnel herp = new LocalTunnel("","","aTunnel");
+    
 	public void testLaunchAndTestLocalNamedTunnel() {
-        assertTrue( herp.isTunnelRunning );
+        Assert.assertTrue( herp.isTunnelRunning );
     }
     public void testLaunchAndTestLocalUnnamedTunnel() {
         LocalTunnel derp = new LocalTunnel("","");
 
-        assertTrue( derp.isTunnelRunning );
+        Assert.assertTrue( derp.isTunnelRunning );
     }
     */
-    public void testAlwaysTrue() {
-        assertTrue(true);
+	@Test
+	public void testQueryTunnel() {
+		System.out.println(tunnel.tunnelProcess.isAlive());
+		System.out.println(tunnel.tunnelProcess.exitValue());
+		Assert.assertTrue(tunnel.queryTunnel());
+	}
+    @Test
+    public void testGetUnamedTunnelId() {
+    	tunnel.queryTunnel();
+    	System.out.println(tunnel.isTunnelRunning);
+    	if (tunnel.tunnelID <= 0) {
+    		Assert.fail("TunnelId = "+tunnel.tunnelID);
+    	}
     }
 }
