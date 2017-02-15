@@ -57,7 +57,7 @@ public class LocalTunnel extends ApiFactory {
 
 	public boolean queryTunnel(){
 		int tunnelID;
-		if(!this.tunnelname.equals("")){
+		if(!this.tunnelname.equals("") && this.tunnelname != null){
 			tunnelID = getTunnelID(this.tunnelname);
 		}else{
 			tunnelID = getTunnelID();
@@ -65,14 +65,14 @@ public class LocalTunnel extends ApiFactory {
 		//make sure tunnelID is not -1
 		String json = "";
 		try{
-			json = req.get("/"+Integer.toString(tunnelID)+"/check");
+			json = req.get("/"+Integer.toString(tunnelID));
 		}catch(IOException ioe){
-			ioe.printStackTrace();
+			//ioe.printStackTrace();
 			return false;
 		}
 		try{
 			JSONObject res = new JSONObject(json);
-			boolean isActive = res.getBoolean("connected");
+			boolean isActive = res.getBoolean("active");
 			isTunnelRunning = isActive;
 			return isActive;
 		}catch(JSONException jsone){
@@ -165,7 +165,8 @@ public class LocalTunnel extends ApiFactory {
 			tunnelParams += entry.getKey() + entry.getValue();
 		}
 		String tunnelCommand = tunnelLaunchCommand + tunnelParams;
-		tunnelProcess = Runtime.getRuntime().exec(tunnelCommand);
+		//tunnelProcess = Runtime.getRuntime().exec(tunnelCommand);
+		tunnelProcess = new ProcessBuilder().command(tunnelCommand).inheritIO().start();
 		jenkinsStartedTunnel = true;
 		pluginStartedTheTunnel = true;
 	}
