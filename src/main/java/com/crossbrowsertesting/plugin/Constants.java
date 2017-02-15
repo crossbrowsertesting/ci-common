@@ -34,6 +34,9 @@ public final class Constants {
 	// Selenium Messages
 	public static final String SELENIUM_START_MSG = "\n---------------------\nSELENIUM TEST RESULTS\n---------------------";
 	
+	// Account Messages
+	public static final String CREDENTIALS_INVALID_MSG = "Invalid username or apikey";
+	
 	private Constants(){
 	    throw new AssertionError();
 	  }
