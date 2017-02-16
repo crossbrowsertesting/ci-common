@@ -21,22 +21,26 @@
     </pluginRepository>
   </pluginRepositories>
   <build>
-    <finalName>${project.artifactId}</finalName>
+    <finalName>${project.artifactId}-${project.version}</finalName>
     <plugins>
       <plugin>
-        <groupId>cy.github</groupId>
+        <groupId>de.jutzig</groupId>
         <artifactId>github-release-plugin</artifactId>
-        <version>${plugin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>gh-upload</goal>
-            </goals>
-            <phase>deploy</phase>
-          </execution>
-        </executions>
+        <version>1.2.0</version>
+        <configuration>
+          <releaseName>${project.version}</releaseName>
+          <tag>${project.version}</tag>
+          <fileSets>
+            <fileSet>
+              <directory>${project.build.directory}</directory>
+              <includes>
+                <include>${project.build.finalName}.${project.packaging}</include>
+              </includes>
+            </fileSet>
+          </fileSets>
+        </configuration>
       </plugin>
-  </plugins>
+    </plugins>
   </build>
   <name>common</name>
   <url>http://maven.apache.org</url>
@@ -54,14 +58,14 @@
     </dependency>
 	<!-- https://mvnrepository.com/artifact/org.json/json -->
 	<dependency>
-    	<groupId>org.json</groupId>
-    	<artifactId>json</artifactId>
-    	<version>20160810</version>
+  	<groupId>org.json</groupId>
+  	<artifactId>json</artifactId>
+  	<version>20160810</version>
 	</dependency>
 	<dependency>
-    	<groupId>commons-codec</groupId>
-    	<artifactId>commons-codec</artifactId>
-    	<version>1.9</version>
+  	<groupId>commons-codec</groupId>
+  	<artifactId>commons-codec</artifactId>
+  	<version>1.9</version>
 	</dependency>
   </dependencies>
 </project>
