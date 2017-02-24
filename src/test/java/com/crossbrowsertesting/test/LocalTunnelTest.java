@@ -27,7 +27,7 @@ public class LocalTunnelTest extends APITestFactory {
 			unnamedTunnel.start();
 			namedTunnel.start();
 		} catch (IOException e) {
-			//Assume.assumeNoException("Could not start the tunnel", e);
+			Assume.assumeNoException("Could not start the tunnel", e);
 		}
 	}
 	@After
@@ -45,14 +45,6 @@ public class LocalTunnelTest extends APITestFactory {
     	System.out.println(unnamedTunnel.isTunnelRunning);
     	if (unnamedTunnel.tunnelID <= 0) {
     		Assert.fail("TunnelId = "+unnamedTunnel.tunnelID);
-    	}
-    }
-    @Test
-    public void testGetNamedTunnelId() {
-    	namedTunnel.queryTunnel();
-    	System.out.println(namedTunnel.isTunnelRunning);
-    	if (namedTunnel.tunnelID <= 0) {
-    		Assert.fail("TunnelId = "+namedTunnel.tunnelID);
     	}
     }
 }
