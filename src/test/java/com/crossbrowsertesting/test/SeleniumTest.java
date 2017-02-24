@@ -4,12 +4,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import com.crossbrowsertesting.api.Selenium;
 
 /**
@@ -23,14 +30,33 @@ public class SeleniumTest extends APITestFactory{
      */
 
 	private Selenium se;
+	HashMap<String, String> caps;
 
     @Before
     public void set() {
-		se = new Selenium(username, apikey);		
+		se = new Selenium(username, apikey);
+		caps = new HashMap<String, String>();
+		caps.put("name","CICommonTest");
+		caps.put("build", "1.0");
+		caps.put("browser", "Safari8");
+		caps.put("os", "Mac10.10");
+		caps.put("resolution", "1024x768");
     }
     @After
     public void clear() {
     	se = null;
+    	caps = null;
+    }
+    public void runSeleniumTest() throws MalformedURLException {
+        DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setCapability("name", this.caps.get("name"));
+        caps.setCapability("build", this.caps.get("build"));
+        caps.setCapability("browser_api_name", this.caps.get("browser"));
+        caps.setCapability("os_api_name", this.caps.get("os"));
+        caps.setCapability("screen_resolution", this.caps.get("resolution"));
+        RemoteWebDriver driver = new RemoteWebDriver(new URL("http://" + username + ":" + apikey +"@hub.crossbrowsertesting.com:80/wd/hub"), caps);
+        driver.get("http://crossbrowsertesting.github.io/selenium_example_page.html");
+        driver.quit();
     }
     public JSONObject getSeTestInfo(String seleniumTestId) throws IOException {
     	String json = se.getRequest().get("/"+seleniumTestId);
@@ -61,6 +87,12 @@ public class SeleniumTest extends APITestFactory{
     }
     @Test
     public void testGetSeleniumTestId() {
+		// Let's run a test just to make sure that we have least one test out there
+		try {
+			runSeleniumTest();
+		} catch (MalformedURLException e) {
+			Assume.assumeNoException("Could not start selenium test", e);
+		}
     	try {
     		String testId = "";
     		// Case 1
