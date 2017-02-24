@@ -187,10 +187,12 @@ public class Selenium extends ApiFactory{
 		return seleniumTestId;
 	}
 	public Queue<Map<String, String>> getSeleniumTestInfo2(Map<String, String> params) throws IOException {
+		// you can use the get request params
 		String json = req.get("", params);
 		return parseIdAndPublicUrl(json);
 	}
 	public Queue<Map<String, String>> getSeleniumTestInfo2(String name, String build, String browserApiName, String osApiName, String resolution) throws IOException {
+		// you can specify the params one at a time
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("name", name);
 		params.put("build", build);

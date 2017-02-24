@@ -15,54 +15,44 @@ import com.crossbrowsertesting.api.LocalTunnel;
  */
 public class LocalTunnelTest extends APITestFactory {
 
-	LocalTunnel tunnel;
+	private LocalTunnel unnamedTunnel;
+	private LocalTunnel namedTunnel;
+	private String tunnelName = "TestCICommon";
 	
 	@Before
 	public void set() {
-		tunnel = new LocalTunnel(username, apikey);
+		unnamedTunnel = new LocalTunnel(username, apikey);
+		namedTunnel = new LocalTunnel(username, apikey, tunnelName);
 		try {
-			tunnel.start();
+			unnamedTunnel.start();
+			namedTunnel.start();
 		} catch (IOException e) {
-			Assume.assumeNoException("Could not start the tunnel", e);
+			//Assume.assumeNoException("Could not start the tunnel", e);
 		}
 	}
 	@After
 	public void clear() {
-		/*
-		try {
-			tunnel.stop();
-		} catch (IOException e) {
-			Assume.assumeNoException("Could not stop the tunnel", e);
-		} catch (InterruptedException e) {
-			Assume.assumeNoException("Could not stop the tunnel", e);
-		}
-		tunnel = null;
-		*/
 	}
-	/*
-    LocalTunnel herp = new LocalTunnel("","","aTunnel");
-    
-	public void testLaunchAndTestLocalNamedTunnel() {
-        Assert.assertTrue( herp.isTunnelRunning );
-    }
-    public void testLaunchAndTestLocalUnnamedTunnel() {
-        LocalTunnel derp = new LocalTunnel("","");
-
-        Assert.assertTrue( derp.isTunnelRunning );
-    }
-    */
 	@Test
 	public void testQueryTunnel() {
-		System.out.println(tunnel.tunnelProcess.isAlive());
-		System.out.println(tunnel.tunnelProcess.exitValue());
-		Assert.assertTrue(tunnel.queryTunnel());
+		System.out.println(unnamedTunnel.tunnelProcess.isAlive());
+		System.out.println(unnamedTunnel.tunnelProcess.exitValue());
+		Assert.assertTrue(unnamedTunnel.queryTunnel());
 	}
     @Test
     public void testGetUnamedTunnelId() {
-    	tunnel.queryTunnel();
-    	System.out.println(tunnel.isTunnelRunning);
-    	if (tunnel.tunnelID <= 0) {
-    		Assert.fail("TunnelId = "+tunnel.tunnelID);
+    	unnamedTunnel.queryTunnel();
+    	System.out.println(unnamedTunnel.isTunnelRunning);
+    	if (unnamedTunnel.tunnelID <= 0) {
+    		Assert.fail("TunnelId = "+unnamedTunnel.tunnelID);
+    	}
+    }
+    @Test
+    public void testGetNamedTunnelId() {
+    	namedTunnel.queryTunnel();
+    	System.out.println(namedTunnel.isTunnelRunning);
+    	if (namedTunnel.tunnelID <= 0) {
+    		Assert.fail("TunnelId = "+namedTunnel.tunnelID);
     	}
     }
 }

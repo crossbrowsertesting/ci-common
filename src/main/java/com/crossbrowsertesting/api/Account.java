@@ -1,6 +1,7 @@
 package com.crossbrowsertesting.api;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.json.JSONObject;
 
@@ -34,5 +35,18 @@ public class Account extends ApiFactory {
 			connectionSuccessful = false;
 			return false;
 		}
-	}	
+	}
+	public boolean sendMixpanelEvent(String eventName) {
+		// used for analytics with MixPanel
+		String json = "";
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put("event_name", eventName);
+		try {
+			json = req.post("/sendMixpanelEvent", params);
+		} catch (IOException ioe) {
+			return false;
+		}
+		return true;
+		
+	}
 }
