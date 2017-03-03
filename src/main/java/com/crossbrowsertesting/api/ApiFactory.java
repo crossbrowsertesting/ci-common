@@ -25,5 +25,20 @@ public abstract class ApiFactory {
 	public boolean useProxy() {
 		return req.useProxy;
 	}
+	public int proxyPort() {
+		return req.proxyPort;
+	}
+	public String proxyUrl() {
+		return req.proxyUrl;
+	}
+	public boolean useProxyCredentials() {
+		return req.useProxyCredentials;
+	}
+	public String proxyUsername() {
+		return req.proxyUsername;
+	}
+	public String proxyPassword() {
+		return req.proxyPassword;
+	}
 	public abstract void init();
 }
