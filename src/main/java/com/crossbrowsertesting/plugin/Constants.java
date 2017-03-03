@@ -16,6 +16,7 @@ public final class Constants {
 	public static final String BUILDNUMBER = "CBT_BUILD_NUMBER";
 	public static final String OPERATINGSYSTEM = "CBT_OPERATING_SYSTEM";
 	public static final String BROWSER = "CBT_BROWSER";
+	public static final String BROWSERS = "CBT_BROWSERS";
 	public static final String RESOLUTION = "CBT_RESOLUTION";
 	public static final String BROWSERNAME = "CBT_BROWSERNAME";
 	
