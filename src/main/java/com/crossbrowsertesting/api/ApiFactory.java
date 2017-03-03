@@ -22,5 +22,8 @@ public abstract class ApiFactory {
 	public Request getRequest() {
 		return req;
 	}
+	public boolean useProxy() {
+		return req.useProxy;
+	}
 	public abstract void init();
 }
