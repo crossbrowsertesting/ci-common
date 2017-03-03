@@ -35,16 +35,25 @@ public class LocalTunnelTest extends APITestFactory {
 	}
 	@Test
 	public void testQueryTunnel() {
-		System.out.println(unnamedTunnel.tunnelProcess.isAlive());
-		System.out.println(unnamedTunnel.tunnelProcess.exitValue());
+		//System.out.println(unnamedTunnel.tunnelProcess.isAlive());
+		//System.out.println(unnamedTunnel.tunnelProcess.exitValue());
 		Assert.assertTrue(unnamedTunnel.queryTunnel());
+		Assert.assertTrue(namedTunnel.queryTunnel());
 	}
     @Test
     public void testGetUnamedTunnelId() {
     	unnamedTunnel.queryTunnel();
-    	System.out.println(unnamedTunnel.isTunnelRunning);
     	if (unnamedTunnel.tunnelID <= 0) {
     		Assert.fail("TunnelId = "+unnamedTunnel.tunnelID);
     	}
+    	Assert.assertNotEquals(unnamedTunnel.tunnelID, namedTunnel.tunnelID);
+    }
+    @Test
+    public void testGetNameTunnelId() {
+    	namedTunnel.queryTunnel();
+    	if (namedTunnel.tunnelID <= 0) {
+    		Assert.fail("TunnelId = "+namedTunnel.tunnelID);
+    	}
+    	Assert.assertNotEquals(namedTunnel.tunnelID, unnamedTunnel.tunnelID);
     }
 }

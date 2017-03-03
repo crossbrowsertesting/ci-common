@@ -56,7 +56,6 @@ public class LocalTunnel extends ApiFactory {
 	}
 
 	public boolean queryTunnel(){
-		int tunnelID;
 		if(!this.tunnelname.equals("") && this.tunnelname != null){
 			tunnelID = getTunnelID(this.tunnelname);
 		}else{
