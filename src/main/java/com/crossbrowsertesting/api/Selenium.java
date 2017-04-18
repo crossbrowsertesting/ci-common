@@ -23,7 +23,7 @@ public class Selenium extends ApiFactory{
 	@Deprecated
 	public List<OperatingSystem> operatingSystems = new LinkedList<OperatingSystem>();
 	public Map<String, OperatingSystem> operatingSystems2 = new HashMap<String, OperatingSystem>(); //getting from a Map is O(1)
-	
+	public String configurationsAsJson = "";
 	public Selenium() {
 		super("selenium");
 		init();
@@ -48,6 +48,7 @@ public class Selenium extends ApiFactory{
 	
 	@SuppressWarnings("deprecation")
 	private void populateConfigurations(String json) throws JSONException {
+		configurationsAsJson = json; // for TeamCity
 		JSONArray j_configurations = new JSONArray(json);
 		for(int i=0; i<j_configurations.length();i++) {
 			//parse out the OS info
