@@ -107,7 +107,7 @@ public class LocalTunnel extends ApiFactory {
 	private int getTunnelID() throws JSONException {
 		String json = "";
 		try{
-			json = req.get("?active=true");
+			json = req.get("?num=1&active=true");
 		}catch(IOException ioe){
 			ioe.printStackTrace();
 			return -1;
@@ -143,25 +143,25 @@ public class LocalTunnel extends ApiFactory {
 			ioe.printStackTrace();
 			return -1;
 		}
-
-		try{
+		try {
 			JSONObject res = new JSONObject(json);
 			JSONArray tunnels = res.getJSONArray("tunnels");
-			JSONObject unnamedTunnel = null;
-			for(int i=0;i<tunnels.length();i++){
+			JSONObject namedTunnel = null;
+			for(int i = 0; i < tunnels.length() ; i++) {
 				JSONObject tunnel = tunnels.getJSONObject(i);
-				if(tunnel.getString("tunnel_name").equals(tunnelname)){
-					unnamedTunnel = tunnel;
+				if(!tunnel.isNull("tunnel_name") && tunnel.getString("tunnel_name").equals(tunnelname)){
+					namedTunnel = tunnel;
 					break;
 				}
 			}
-			if(unnamedTunnel!=null){
-				int tunnelID = unnamedTunnel.getInt("tunnel_id");
+			if(namedTunnel!=null){
+				int tunnelID = namedTunnel.getInt("tunnel_id");
 				return tunnelID;
 			}else{
 				return -1;
 			}
 		}catch(JSONException jsone){
+			jsone.printStackTrace();
 			return -1;
 		}
 	}

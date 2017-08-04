@@ -71,8 +71,8 @@ public class SeleniumTest extends APITestFactory{
 	public void testGetSeleniumBrowser() {
         Assert.assertTrue( !se.operatingSystems.isEmpty() );
         Assert.assertTrue( !se.operatingSystems2.isEmpty() );
-        Assert.assertEquals(se.operatingSystems2.get("Nexus9-And60").getApiName(),"Nexus9-And60");
-        Assert.assertEquals(se.operatingSystems2.get("Nexus9-And60").getName(),"Android Nexus 9 / 6.0");
+        Assert.assertEquals(se.operatingSystems2.get("iPadAir-iOS8Sim").getApiName(),"iPadAir-iOS8Sim");
+        Assert.assertEquals(se.operatingSystems2.get("iPadAir-iOS8Sim").getName(),"iPad Air / 8.1 Simulator");
 
     }
     

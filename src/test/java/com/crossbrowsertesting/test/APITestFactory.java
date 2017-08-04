@@ -25,5 +25,4 @@ public abstract class APITestFactory {
 	public abstract void set();
 	@After
 	public abstract void clear();
-
 }
