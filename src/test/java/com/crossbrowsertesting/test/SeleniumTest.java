@@ -71,6 +71,9 @@ public class SeleniumTest extends APITestFactory{
 	public void testGetSeleniumBrowser() {
         Assert.assertTrue( !se.operatingSystems.isEmpty() );
         Assert.assertTrue( !se.operatingSystems2.isEmpty() );
+        Assert.assertEquals(se.operatingSystems2.get("Nexus9-And60").getApiName(),"Nexus9-And60");
+        Assert.assertEquals(se.operatingSystems2.get("Nexus9-And60").getName(),"Android Nexus 9 / 6.0");
+
     }
     
     @Test

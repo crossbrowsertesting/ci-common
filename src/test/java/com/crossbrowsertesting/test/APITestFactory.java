@@ -12,8 +12,8 @@ public abstract class APITestFactory {
 	
 	@BeforeClass
     public static void getEnvironmentVariables() {
-    	username = System.getenv("API_USERNAME");
-    	apikey = System.getenv("API_AUTHKEY");
+    	username = System.getenv("CBT_USERNAME");
+    	apikey = System.getenv("CBT_AUTHKEY");
 		Assume.assumeNotNull(username, apikey);
     }
 	@AfterClass

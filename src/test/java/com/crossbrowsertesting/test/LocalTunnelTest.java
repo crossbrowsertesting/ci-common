@@ -1,6 +1,7 @@
 package com.crossbrowsertesting.test;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -24,10 +25,15 @@ public class LocalTunnelTest extends APITestFactory {
 		unnamedTunnel = new LocalTunnel(username, apikey);
 		namedTunnel = new LocalTunnel(username, apikey, tunnelName);
 		try {
-			unnamedTunnel.start();
-			namedTunnel.start();
-		} catch (IOException e) {
-			Assume.assumeNoException("Could not start the tunnel", e);
+			unnamedTunnel.start(true);
+			namedTunnel.start(true);
+			System.out.println("Waiting 30 seconds for the tunnels to start");
+			TimeUnit.SECONDS.sleep(30);
+		} catch (IOException ioe) {
+			Assume.assumeNoException("Could not start the tunnel", ioe);
+		} catch (InterruptedException ie) {
+			// TODO Auto-generated catch block
+			Assume.assumeNoException("Could not wait for tunnel to start", ie);;
 		}
 	}
 	@After
