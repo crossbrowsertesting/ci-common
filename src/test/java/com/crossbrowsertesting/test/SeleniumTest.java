@@ -40,9 +40,9 @@ public class SeleniumTest extends APITestFactory{
 		caps = new HashMap<String, String>();
 		caps.put("name","CICommonTest");
 		caps.put("build", "1.0");
-		caps.put("browser", "Safari8");
-		caps.put("os", "Mac10.10");
-		caps.put("resolution", "1024x768");
+		caps.put("browser", "IE11");
+		caps.put("os", "Win10");
+		caps.put("resolution", "1366x768");
     }
     @After
     public void clear() {
