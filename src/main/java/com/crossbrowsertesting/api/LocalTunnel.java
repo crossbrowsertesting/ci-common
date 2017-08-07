@@ -1,6 +1,7 @@
 package com.crossbrowsertesting.api;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
@@ -20,8 +21,9 @@ public class LocalTunnel extends ApiFactory {
 	public boolean pluginStartedTheTunnel = false;
 	public Process tunnelProcess;
 	public int tunnelID;
-	private String username, apikey, tunnelname = "";
-	private Path tunnelPath;
+	private String username, apikey = "";
+	private String tunnelname = null;
+	private File tunnelBinary = null;
 	
 	public LocalTunnel(String username, String apikey, String tunnelname) {
 		super("tunnels", username, apikey);
@@ -39,21 +41,27 @@ public class LocalTunnel extends ApiFactory {
 		this.apikey = apikey;
 		
 		// lets get the full path to the cbt_tunnels binary
-		String projectRoot = System.getProperty("user.dir");
-		String tunnelVersion = "v0.1.0";
-		
+		Path tunnelPath = null;
+
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) { // mac
-			this.tunnelPath = Paths.get(projectRoot, "cbt_tunnel", tunnelVersion, "cbt-tunnels-macos");
+			tunnelPath = Paths.get("cbt_tunnel", "v0.1.0", "cbt-tunnels-macos");
 		}else if (System.getProperty("os.name").toLowerCase().contains("win")) { // windows
-			this.tunnelPath = Paths.get(projectRoot, "cbt_tunnel", tunnelVersion, "cbt-tunnels-win.exe");
+			tunnelPath = Paths.get("cbt_tunnel", "v0.1.0", "cbt-tunnels-win.exe");
 		}else if (System.getProperty("os.name").toLowerCase().contains("nix") ||
 				System.getProperty("os.name").toLowerCase().contains("nux") ||
 				System.getProperty("os.name").toLowerCase().contains("aix")) { // linux / unix ?
-			this.tunnelPath = Paths.get(projectRoot, "cbt_tunnel", tunnelVersion, "cbt-tunnels-ubuntu");
-		}else {
-			this.tunnelPath = null;
+			tunnelPath = Paths.get("cbt_tunnel", "v0.1.0", "cbt-tunnels-ubuntu");
 		}
-
+		if (tunnelPath != null) {
+			ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+			this.tunnelBinary = new File(classLoader.getResource(tunnelPath.toString()).getFile());
+		}
+		if (this.tunnelBinary != null && !this.tunnelBinary.canExecute() && (System.getProperty("os.name").toLowerCase().contains("mac") ||
+				System.getProperty("os.name").toLowerCase().contains("nix") ||
+				System.getProperty("os.name").toLowerCase().contains("nux") ||
+				System.getProperty("os.name").toLowerCase().contains("aix"))) { // binary needs to be executable on *nix systems and mac
+			this.tunnelBinary.setExecutable(true);
+		}
 	}
 	public void init() {
 		queryTunnel();
@@ -81,9 +89,9 @@ public class LocalTunnel extends ApiFactory {
 	}
 
 	public boolean queryTunnel(){
-		if(!this.tunnelname.equals("") && this.tunnelname != null){
+		if(!this.tunnelname.equals("") && this.tunnelname != null){ // named tunnel
 			tunnelID = getTunnelID(this.tunnelname);
-		}else{
+		}else{ // unnamed tunnel
 			tunnelID = getTunnelID();
 		} 
 		//make sure tunnelID is not -1
@@ -107,7 +115,7 @@ public class LocalTunnel extends ApiFactory {
 	private int getTunnelID() throws JSONException {
 		String json = "";
 		try{
-			json = req.get("?num=1&active=true");
+			json = req.get("?active=true");
 		}catch(IOException ioe){
 			ioe.printStackTrace();
 			return -1;
@@ -139,7 +147,7 @@ public class LocalTunnel extends ApiFactory {
 		String json = "";
 		try{
 			json = req.get("?active=true");
-		}catch(IOException ioe){
+		}catch(IOException ioe) {
 			ioe.printStackTrace();
 			return -1;
 		}
@@ -154,7 +162,7 @@ public class LocalTunnel extends ApiFactory {
 					break;
 				}
 			}
-			if(namedTunnel!=null){
+			if(namedTunnel != null){
 				int tunnelID = namedTunnel.getInt("tunnel_id");
 				return tunnelID;
 			}else{
@@ -197,7 +205,6 @@ public class LocalTunnel extends ApiFactory {
 		jenkinsStartedTunnel = true;
 		pluginStartedTheTunnel = true;
 	}
-
 	public void start(String localTunnelPath) throws IOException{
 		/*
 		 * Runs a subprocess that starts the node local tunnel using a custom path
@@ -215,8 +222,8 @@ public class LocalTunnel extends ApiFactory {
 		/*
 		 * Runs a subprocess that starts the node local tunnel
 		 */
-		if (useBinary) { // use the locked down binary
-			start(tunnelPath.toString(), new HashMap<String, String>());
+		if (useBinary && tunnelBinary.exists()) { // use the locked down binary
+			start(tunnelBinary.getAbsolutePath(), new HashMap<String, String>());
 		} else { // use the npm installed version... must be in the PATH
 			start("cbt_tunnels", new HashMap<String, String>());
 		}
