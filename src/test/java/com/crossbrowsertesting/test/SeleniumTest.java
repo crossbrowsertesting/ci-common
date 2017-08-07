@@ -14,6 +14,8 @@ import org.junit.Assert;
 import org.junit.Assume;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -47,14 +49,14 @@ public class SeleniumTest extends APITestFactory{
     	se = null;
     	caps = null;
     }
-    public void runSeleniumTest() throws MalformedURLException {
+    public void runSeleniumTest() throws MalformedURLException, URISyntaxException {
         DesiredCapabilities caps = new DesiredCapabilities();
         caps.setCapability("name", this.caps.get("name"));
         caps.setCapability("build", this.caps.get("build"));
         caps.setCapability("browser_api_name", this.caps.get("browser"));
         caps.setCapability("os_api_name", this.caps.get("os"));
         caps.setCapability("screen_resolution", this.caps.get("resolution"));
-        RemoteWebDriver driver = new RemoteWebDriver(new URL("http://" + username + ":" + apikey +"@hub.crossbrowsertesting.com:80/wd/hub"), caps);
+        RemoteWebDriver driver = new RemoteWebDriver(new URI("http://" + username + ":" + apikey +"@hub.crossbrowsertesting.com:80/wd/hub").toURL(), caps);
         driver.get("http://crossbrowsertesting.github.io/selenium_example_page.html");
         driver.quit();
     }
@@ -93,7 +95,7 @@ public class SeleniumTest extends APITestFactory{
 		// Let's run a test just to make sure that we have least one test out there
 		try {
 			runSeleniumTest();
-		} catch (MalformedURLException e) {
+		} catch (MalformedURLException | URISyntaxException e) {
 			Assume.assumeNoException("Could not start selenium test", e);
 		}
     	try {
