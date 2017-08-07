@@ -53,7 +53,7 @@ public class LocalTunnel extends ApiFactory {
 			tunnelPath = Paths.get("cbt_tunnel", "v0.1.0", "cbt-tunnels-ubuntu");
 		}
 		if (tunnelPath != null) {
-			ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+			ClassLoader classLoader = this.getClass().getClassLoader();
 			this.tunnelBinary = new File(classLoader.getResource(tunnelPath.toString()).getFile());
 		}
 		if (this.tunnelBinary != null && !this.tunnelBinary.canExecute() && (System.getProperty("os.name").toLowerCase().contains("mac") ||
