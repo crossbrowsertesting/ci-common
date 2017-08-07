@@ -222,7 +222,7 @@ public class LocalTunnel extends ApiFactory {
 		/*
 		 * Runs a subprocess that starts the node local tunnel
 		 */
-		if (useBinary && tunnelBinary.exists()) { // use the locked down binary
+		if (useBinary) { // use the locked down binary
 			start(tunnelBinary.getAbsolutePath(), new HashMap<String, String>());
 		} else { // use the npm installed version... must be in the PATH
 			start("cbt_tunnels", new HashMap<String, String>());
