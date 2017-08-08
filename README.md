@@ -21,7 +21,7 @@ Just add this to your pom.xml
   <dependency>
     <groupId>com.github.crossbrowsertesting</groupId>
     <artifactId>ci-common</artifactId>
-    <version>0.7-SNAPSHOT</version>
+    <version>0.25-SNAPSHOT</version>
   </dependency>
 </dependencies>
 ```
