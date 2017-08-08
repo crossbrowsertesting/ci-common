@@ -34,7 +34,7 @@ public class LocalTunnel extends ApiFactory {
 	private void setupClass(String username, String apikey) {
 		this.username = username;
 		this.apikey = apikey;
-		
+		/*
 		// lets get the full path to the cbt_tunnels binary
 		String projectRoot = System.getProperty("user.dir");
 		String tunnelVersion = "v0.1.0";
@@ -50,6 +50,7 @@ public class LocalTunnel extends ApiFactory {
 		}else {
 			this.tunnelPath = null;
 		}
+		*/
 
 	}
 	public void init() {
