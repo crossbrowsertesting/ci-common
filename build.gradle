@@ -4,18 +4,19 @@ plugins {
 	id 'co.riiid.gradle' version '0.4.2'
 }
 group = 'com.crossbrowsertesting'
-version = '0.25-SNAPSHOT'
+version = '0.25.2-SNAPSHOT'
 
 description = """common"""
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-String GITHUB_TOKEN = System.getenv()["GITHUB_TOKEN"]
+
 repositories {
      maven { url "http://repo.jenkins-ci.org/releases/" }
      maven { url "http://repo.maven.apache.org/maven2" }
 }
+
 dependencies {
     compile group: 'org.json', name: 'json', version:'20160810'
     compile group: 'commons-codec', name: 'commons-codec', version:'1.9'
@@ -23,30 +24,21 @@ dependencies {
     testCompile group: 'org.seleniumhq.selenium', name: 'selenium-java', version:'3.0.1'
 }
 
-task hello {
-	doLast {
-		println GITHUB_TOKEN
+github {
+    String GITHUB_TOKEN = System.getenv()["GITHUB_TOKE"]
+    if (GITHUB_TOKEN == null || GITHUB_TOKEN.length() < 1) {
+		throw new GradleException("GITHUB_TOKEN environment variable is not set")
+	} else {
+		owner = "crossbrowsertesting"
+		repo = "ci-common"
+		token = GITHUB_TOKEN
+		targetCommitish = "master"
+		tagName = project.version
+		name = project.version
+		assets = [
+				'build/libs/' + project.name + '-' + project.version + '.jar',
+		]
 	}
 }
-
-// tasks
-tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
-}
-
-task wrapper(type: Wrapper) {
-	gradleVersion = '4.0.2'
-}
-
-github {
-	owner = "crossbrowsertesting"
-	repo = "ci-common"
-	token = GITHUB_TOKEN
-	targetCommitish = "master"
-	tagName = project.version
-	name = project.version
-	draft = true
-	assets = [
-		'build/libs/'+project.name+'-'+project.version+'.jar'
-	]
-}
+// clean and jar first
+githubRelease.dependsOn(clean, jar)
