@@ -1,7 +1,6 @@
 package com.crossbrowsertesting.test;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -9,9 +8,6 @@ import java.util.Map;
 import java.util.Queue;
 
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,41 +19,33 @@ import com.crossbrowsertesting.api.Selenium;
  * Unit test for Selenium
  */
 public class SeleniumTest extends APITestFactory{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
 
-	private Selenium se;
-	HashMap<String, String> caps;
+	private static Selenium se;
 
-    @Before
-    public void set() {
-		se = new Selenium(username, apikey);
-		caps = new HashMap<String, String>();
-		caps.put("name","CICommonTest");
-		caps.put("build", "1.0");
-		caps.put("browser", "Safari8");
-		caps.put("os", "Mac10.10");
-		caps.put("resolution", "1024x768");
+    @BeforeClass
+    public static void set() {
+		// Let's run a test just to make sure that we have least one test out there
+		try {
+			se = new Selenium(username, apikey);
+			DesiredCapabilities caps = new DesiredCapabilities();
+			caps.setCapability("name", "CICommonTest");
+			caps.setCapability("build", "1.0");
+			caps.setCapability("browser_api_name", "IE11");
+			caps.setCapability("os_api_name", "Win10");
+			caps.setCapability("screen_resolution", "1366x768");
+			RemoteWebDriver driver = new RemoteWebDriver(new URL("http://" + username + ":" + apikey +"@hub.crossbrowsertesting.com:80/wd/hub"), caps);
+			driver.get("http://crossbrowsertesting.github.io/selenium_example_page.html");
+			driver.quit();
+		} catch (MalformedURLException e) {
+			Assume.assumeNoException("Could not start selenium test", e);
+		}
+
     }
-    @After
-    public void clear() {
+    @AfterClass
+    public static void clear() {
     	se = null;
-    	caps = null;
     }
-    public void runSeleniumTest() throws MalformedURLException {
-        DesiredCapabilities caps = new DesiredCapabilities();
-        caps.setCapability("name", this.caps.get("name"));
-        caps.setCapability("build", this.caps.get("build"));
-        caps.setCapability("browser_api_name", this.caps.get("browser"));
-        caps.setCapability("os_api_name", this.caps.get("os"));
-        caps.setCapability("screen_resolution", this.caps.get("resolution"));
-        RemoteWebDriver driver = new RemoteWebDriver(new URL("http://" + username + ":" + apikey +"@hub.crossbrowsertesting.com:80/wd/hub"), caps);
-        driver.get("http://crossbrowsertesting.github.io/selenium_example_page.html");
-        driver.quit();
-    }
+
     public JSONObject getSeTestInfo(String seleniumTestId) throws IOException {
     	String json = se.getRequest().get("/"+seleniumTestId);
     	return new JSONObject(json);
@@ -89,34 +77,41 @@ public class SeleniumTest extends APITestFactory{
 		}
     }
     @Test
-    public void testGetSeleniumTestId() {
-		// Let's run a test just to make sure that we have least one test out there
+	public void testGetSeleniumTestIdCase1() {
 		try {
-			runSeleniumTest();
-		} catch (MalformedURLException e) {
-			Assume.assumeNoException("Could not start selenium test", e);
-		}
-    	try {
-    		String testId = "";
-    		// Case 1
-			testId = se.getSeleniumTestId("Jenkins Selenium Demo", "5", "Chrome35", "Mac10.9", "1024x768");
+			// Case 1
+			String testId = se.getSeleniumTestId("Jenkins Selenium Demo", "5", "Chrome35", "Mac10.9", "1024x768");
 			// 1st case should return that exact id though it already has the client_platform set
 			Assert.assertEquals("6800215", testId);
+		} catch (IOException e) {
+			Assert.fail("Caught Exception");
+		}
+	}
+    @Test
+    public void testGetSeleniumTestIdCase2() {
+    	try {
 			// Case 2
-			testId = se.getSeleniumTestId("Jenkins Demo", "5", "Chrome35", "Mac10.9", "1024x768");
+			String testId = se.getSeleniumTestId("Jenkins Demo", "5", "Chrome35", "Mac10.9", "1024x768");
 			// 2nd case should return the latest id that doesnt have jenkins in the client_platform
-			Assert.assertTrue(!testId.isEmpty());
+			Assert.assertFalse(testId.isEmpty());
 			Assert.assertNotEquals("6800215", testId);
-			// Case 3
-			String thirdTestId = se.getSeleniumTestId("FakeNotRealAtAllTest", "-9", "FakeBrowser", "FakeOS", "FakeResolution");
-			// 3rd case should return the same id as the 2nd case
-			Assert.assertTrue(!thirdTestId.isEmpty());
-			Assert.assertEquals(testId, thirdTestId);
 		} catch (IOException e) {
 			Assert.fail("Caught Exception");
 		}	
     }
-    
+	@Test
+	public void testGetSeleniumTestIdCase3() {
+		try {
+			String secondTestId = se.getSeleniumTestId("Jenkins Demo", "5", "Chrome35", "Mac10.9", "1024x768");
+			// Case 3
+			String thirdTestId = se.getSeleniumTestId("FakeNotRealAtAllTest", "-9", "FakeBrowser", "FakeOS", "FakeResolution");
+			// 3rd case should return the same id as the 2nd case
+			Assert.assertFalse(thirdTestId.isEmpty());
+			Assert.assertEquals(secondTestId, thirdTestId);
+		} catch (IOException e) {
+			Assert.fail("Caught Exception");
+		}
+	}
     @Test
     public void testMarkPassOrFail() {
     	try {

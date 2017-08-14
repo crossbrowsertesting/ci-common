@@ -1,11 +1,22 @@
 package com.crossbrowsertesting.api;
 
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
+import com.fizzed.jne.JNE;
+import com.fizzed.jne.Options;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +29,9 @@ public class LocalTunnel extends ApiFactory {
 	public Process tunnelProcess;
 	public int tunnelID;
 	private String username, apikey, tunnelname = "";
-	private Path tunnelPath;
+
+	private final String TUNNEL_VERSION = "v0.1.0";
+	//private Path tunnelPath;
 	
 	public LocalTunnel(String username, String apikey, String tunnelname) {
 		super("tunnels", username, apikey);
@@ -188,7 +201,6 @@ public class LocalTunnel extends ApiFactory {
 		}
 		String[] tunnelCommand = (tunnelLaunchCommand + tunnelParams).split("\\s+");
 		//tunnelProcess = Runtime.getRuntime().exec(tunnelCommand);
-//		tunnelProcess = new ProcessBuilder().command(tunnelCommand).inheritIO().start();
 //		tunnelProcess = new ProcessBuilder().command(tunnelCommand).inheritIO().start(); // prints the output
 		tunnelProcess = new ProcessBuilder().command(tunnelCommand).start(); // doesnt print the output
 
@@ -209,13 +221,19 @@ public class LocalTunnel extends ApiFactory {
 		 */
 		start("cbt_tunnels", new HashMap<String, String>());
 	}
-	public void start(boolean useBinary) throws IOException {
+	public void start(boolean useBinary) throws URISyntaxException, IOException {
 		/*
 		 * Runs a subprocess that starts the node local tunnel
+		 * either uses an installed version or the bundled binary
 		 */
 		if (useBinary) { // use the locked down binary
-			start(tunnelPath.toString(), new HashMap<String, String>());
-		} else { // use the npm installed version... must be in the PATH
+			Options binarySearchOptions = new Options();
+			Path tunnelPath = Paths.get(File.separator,"cbt_tunnels", TUNNEL_VERSION);
+			binarySearchOptions = binarySearchOptions.setResourcePrefix(tunnelPath.toString()); // instead of using the default /jne use /cbt_tunnels/v0.1.0
+			File binary = JNE.requireExecutable("cbt_tunnels", binarySearchOptions);
+			start(binary.getPath(), new HashMap<String, String>());
+		}
+		else { // use the npm installed version... must be in the PATH
 			start("cbt_tunnels", new HashMap<String, String>());
 		}
 	}
@@ -230,5 +248,12 @@ public class LocalTunnel extends ApiFactory {
 		if (pluginStartedTheTunnel) {
 			tunnelProcess.destroy();
 		}
+	}
+	public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
+		LocalTunnel lt = new LocalTunnel("mikeh", "youllneverknow");
+		lt.start(true);
+		TimeUnit.SECONDS.sleep(30);
+		System.out.println(lt.queryTunnel());
+		lt.stop();
 	}
 }
