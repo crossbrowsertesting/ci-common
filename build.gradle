@@ -4,7 +4,7 @@ plugins {
 	id 'co.riiid.gradle' version '0.4.2'
 }
 group = 'com.crossbrowsertesting'
-version = '0.28-SNAPSHOT'
+version = '0.29-SNAPSHOT'
 
 description = """common"""
 
@@ -27,19 +27,23 @@ dependencies {
 }
 
 github {
-    String GITHUB_TOKEN = System.getenv("GITHUB_TOKEN") || null
-    if (GITHUB_TOKEN == null || GITHUB_TOKEN.length() < 1) {
-		throw new GradleException("GITHUB_TOKEN environment variable is not set")
-	} else {
 		owner = "crossbrowsertesting"
 		repo = "ci-common"
-		token = GITHUB_TOKEN
+		token = " "
 		targetCommitish = "master"
 		tagName = project.version
 		name = project.version
 		assets = [
 				'build/libs/' + project.name + '-' + project.version + '.jar',
 		]
+
+}
+// get the github token from an environment variable $GITHUB_TOKEN
+githubRelease.doFirst {
+	if (System.getenv().containsKey("GITHUB_TOKEN")) {
+		github.token = System.getenv("GITHUB_TOKEN")
+	} else {
+		throw new GradleException("GITHUB_TOKEN environment variable is not set")
 	}
 }
 // clean and jar first
