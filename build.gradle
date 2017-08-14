@@ -4,7 +4,7 @@ plugins {
 	id 'co.riiid.gradle' version '0.4.2'
 }
 group = 'com.crossbrowsertesting'
-version = '0.26-SNAPSHOT'
+version = '0.27-SNAPSHOT'
 
 description = """common"""
 
@@ -27,7 +27,7 @@ dependencies {
 }
 
 github {
-    String GITHUB_TOKEN = System.getenv()["GITHUB_TOKEN"]
+    String GITHUB_TOKEN = System.getenv("GITHUB_TOKEN")
     if (GITHUB_TOKEN == null || GITHUB_TOKEN.length() < 1) {
 		throw new GradleException("GITHUB_TOKEN environment variable is not set")
 	} else {
