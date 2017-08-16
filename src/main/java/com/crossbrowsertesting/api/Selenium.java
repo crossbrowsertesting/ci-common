@@ -1,19 +1,14 @@
 package com.crossbrowsertesting.api;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
+import com.crossbrowsertesting.configurations.Browser;
+import com.crossbrowsertesting.configurations.OperatingSystem;
+import com.crossbrowsertesting.configurations.Resolution;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.crossbrowsertesting.configurations.*;
+import java.io.IOException;
+import java.util.*;
 
 public class Selenium extends ApiFactory{
 	/*

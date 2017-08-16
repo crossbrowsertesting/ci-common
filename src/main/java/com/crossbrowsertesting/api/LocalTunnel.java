@@ -1,25 +1,17 @@
 package com.crossbrowsertesting.api;
 
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.CodeSource;
-import java.security.ProtectionDomain;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
-
 import com.fizzed.jne.JNE;
 import com.fizzed.jne.Options;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class LocalTunnel extends ApiFactory {
 	public boolean isTunnelRunning = false;
@@ -228,10 +220,11 @@ public class LocalTunnel extends ApiFactory {
 		 */
 		if (useBinary) { // use the locked down binary
 			Options binarySearchOptions = new Options();
-			Path tunnelPath = Paths.get(File.separator,"cbt_tunnels", TUNNEL_VERSION);
-			binarySearchOptions = binarySearchOptions.setResourcePrefix(tunnelPath.toString()); // instead of using the default /jne use /cbt_tunnels/v0.1.0
+			String tunnelPath = "/cbt_tunnels/" + TUNNEL_VERSION;
+			binarySearchOptions = binarySearchOptions.setResourcePrefix(tunnelPath.toString()); // instead of using the default /jne we're going to use /cbt_tunnels/v0.1.0
 			File binary = JNE.requireExecutable("cbt_tunnels", binarySearchOptions);
 			start(binary.getPath(), new HashMap<String, String>());
+
 		}
 		else { // use the npm installed version... must be in the PATH
 			start("cbt_tunnels", new HashMap<String, String>());
