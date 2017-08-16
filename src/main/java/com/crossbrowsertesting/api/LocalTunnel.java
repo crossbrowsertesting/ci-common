@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class LocalTunnel extends ApiFactory {
 	public boolean isTunnelRunning = false;
@@ -241,12 +240,5 @@ public class LocalTunnel extends ApiFactory {
 		if (pluginStartedTheTunnel) {
 			tunnelProcess.destroy();
 		}
-	}
-	public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
-		LocalTunnel lt = new LocalTunnel("mikeh", "youllneverknow");
-		lt.start(true);
-		TimeUnit.SECONDS.sleep(30);
-		System.out.println(lt.queryTunnel());
-		lt.stop();
 	}
 }
