@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class LocalTunnel extends ApiFactory {
 	public boolean isTunnelRunning = false;
@@ -20,6 +21,8 @@ public class LocalTunnel extends ApiFactory {
 	public Process tunnelProcess;
 	public int tunnelID;
 	private String username, apikey, tunnelname = "";
+
+	private final static Logger log = Logger.getLogger(LocalTunnel.class.getName());
 
 	private final String TUNNEL_VERSION = "v0.1.0";
 	//private Path tunnelPath;
@@ -85,17 +88,21 @@ public class LocalTunnel extends ApiFactory {
 			tunnelID = getTunnelID(this.tunnelname);
 		}else{
 			tunnelID = getTunnelID();
-		} 
+		}
+		log.info("tunnelId: "+tunnelID);
 		//make sure tunnelID is not -1
 		String json = "";
-			json = req.get("/"+Integer.toString(tunnelID));
+		json = req.get("/"+Integer.toString(tunnelID));
+		log.finer(json);
 
 		try{
 			JSONObject res = new JSONObject(json);
 			boolean isActive = res.getBoolean("active");
+			log.finer("isActive: "+isActive);
 			isTunnelRunning = isActive;
 			return isActive;
 		}catch(JSONException jsone){
+			log.warning("got jsonexception");
 			return false;
 		}
 	}
