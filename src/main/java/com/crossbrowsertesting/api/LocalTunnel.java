@@ -19,7 +19,7 @@ public class LocalTunnel extends ApiFactory {
 	public boolean jenkinsStartedTunnel = false; // variable name change
 	public boolean pluginStartedTheTunnel = false;
 	public Process tunnelProcess;
-	public int tunnelID;
+	public int tunnelID = -1;
 	private String username, apikey, tunnelname = "";
 
 	private final static Logger log = Logger.getLogger(LocalTunnel.class.getName());
@@ -84,25 +84,31 @@ public class LocalTunnel extends ApiFactory {
 	}
 
 	public boolean queryTunnel(){
-		if(!this.tunnelname.equals("") && this.tunnelname != null){
-			tunnelID = getTunnelID(this.tunnelname);
-		}else{
-			tunnelID = getTunnelID();
+		if (tunnelID < 0) {
+			if (!this.tunnelname.equals("") && this.tunnelname != null) {
+				tunnelID = getTunnelID(this.tunnelname);
+			} else {
+				tunnelID = getTunnelID();
+			}
+			log.fine("tunnelId: " + tunnelID);
 		}
-		log.info("tunnelId: "+tunnelID);
-		//make sure tunnelID is not -1
-		String json = "";
-		json = req.get("/"+Integer.toString(tunnelID));
-		log.finer(json);
 
-		try{
-			JSONObject res = new JSONObject(json);
-			boolean isActive = res.getBoolean("active");
-			log.finer("isActive: "+isActive);
-			isTunnelRunning = isActive;
-			return isActive;
-		}catch(JSONException jsone){
-			log.warning("got jsonexception");
+		if (tunnelID > -1) {
+			String json = "";
+			json = req.get("/"+Integer.toString(tunnelID));
+			log.finest(json);
+
+			try {
+				JSONObject res = new JSONObject(json);
+				boolean isActive = res.getBoolean("active");
+				log.finer("isActive: "+isActive);
+				isTunnelRunning = isActive;
+				return isActive;
+			} catch(JSONException jsone) {
+				log.fine("got jsonexception");
+				return false;
+			}
+		} else {
 			return false;
 		}
 	}
