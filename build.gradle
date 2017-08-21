@@ -4,12 +4,12 @@ plugins {
 	id 'co.riiid.gradle' version '0.4.2'
 }
 group = 'com.crossbrowsertesting'
-version = '0.31-SNAPSHOT'
+version = '0.32-SNAPSHOT'
 
 description = """common classes for continuous integration plugins"""
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 
 repositories {
