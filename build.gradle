@@ -4,7 +4,7 @@ plugins {
 	id 'co.riiid.gradle' version '0.4.2'
 }
 group = 'com.crossbrowsertesting'
-version = '0.30-SNAPSHOT'
+version = '0.31-SNAPSHOT'
 
 description = """common classes for continuous integration plugins"""
 
@@ -22,6 +22,7 @@ dependencies {
     compile group: 'commons-codec', name: 'commons-codec', version:'1.9'
 	compile group: 'com.fizzed', name: 'jne', version: '3.0.0'
 	compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.25'
+	compile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
     testCompile group: 'junit', name: 'junit', version:'4.12'
     testCompile group: 'org.seleniumhq.selenium', name: 'selenium-java', version:'3.0.1'
 }

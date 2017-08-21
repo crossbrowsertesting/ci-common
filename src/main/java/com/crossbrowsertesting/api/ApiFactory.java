@@ -2,24 +2,24 @@ package com.crossbrowsertesting.api;
 
 public abstract class ApiFactory {
 	// Abract class for things common in API Requests
-	protected Request req;
+	protected UnirestRequest req;
 	private String url;
 	
 	public ApiFactory(String url) {
 		this.url = url;
-		this.req = new Request(url);
+		this.req = new UnirestRequest(url);
 	}
 	
 	public ApiFactory(String url, String username, String password) {
 		this.url = url;
-		this.req = new Request(url, username, password);
+		this.req = new UnirestRequest(url, username, password);
 	}
 	
 	public void setRequest(String username, String apikey) {
-		req = new Request(url, username, apikey);
+		req = new UnirestRequest(url, username, apikey);
 	}
 	
-	public Request getRequest() {
+	public UnirestRequest getRequest() {
 		return req;
 	}
 	public boolean useProxy() {

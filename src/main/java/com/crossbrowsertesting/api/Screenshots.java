@@ -24,7 +24,6 @@ public class Screenshots extends ApiFactory{
 	private void populateBrowserLists() {
 		browserLists.add(""); //add blank one
 		String json="";
-		try {
 			json = req.get("/browserlists");
 			JSONArray j_browserLists = new JSONArray(json);
 			for(int i=0; i<j_browserLists.length();i++) {
@@ -32,23 +31,13 @@ public class Screenshots extends ApiFactory{
 				String browser_list_name = j_browserList.getString("browser_list_name");
 				browserLists.add(browser_list_name);
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 	public HashMap<String, String> runScreenshotTest(String selectedBrowserList, String url) {
 		String json = "";
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("url", url);
 		params.put("browser_list_name", selectedBrowserList);
-		try {
 			json = req.post("/", params);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		return parseResults(json);
 	}
 	private HashMap<String, String> parseResults(String json) {

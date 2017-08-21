@@ -31,9 +31,7 @@ public class Selenium extends ApiFactory{
 	}
 	public void init() {
 		String json="";
-		try {
-			json = req.get("/browsers");
-		}catch (IOException ioe) {}
+		json = req.get("/browsers");
 		try {
 			operatingSystems = new LinkedList<OperatingSystem>();
 			operatingSystems2 = new HashMap<String, OperatingSystem>();

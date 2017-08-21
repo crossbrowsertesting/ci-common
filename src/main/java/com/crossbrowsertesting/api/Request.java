@@ -12,15 +12,22 @@ import java.net.URL;
 import java.net.Proxy;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpRequest;
 
 /*
  * Instantiate a Request object to make api requests
  * Not intended to be directly imported and instantiated into your project
  * Might consider making it abstract and having API classes like "Selenium" or "Screenshots" extend from it
  */
+@Deprecated
 public class Request {
 	
 	String username = null;
@@ -166,6 +173,7 @@ public class Request {
 	public String delete(String urlStr, Map<String, String> params) throws IOException {
 		return doRequestWithFormParams("DELETE", urlStr, params);
 	}
+
 }
 final class SimpleAuthenticator extends Authenticator {
 	private String username;

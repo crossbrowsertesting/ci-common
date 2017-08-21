@@ -3,7 +3,10 @@ package com.crossbrowsertesting.api;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.json.JSONObject;
+
 
 public class PluginCheck extends ApiFactory{	
 	private String contributer;

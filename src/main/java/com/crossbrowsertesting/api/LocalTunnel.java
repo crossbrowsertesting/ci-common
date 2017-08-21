@@ -65,8 +65,6 @@ public class LocalTunnel extends ApiFactory {
 		String json="";
 		try {
 			json = req.get("?num=1&active=true");
-		}catch (IOException ioe) {}
-		try {
 			JSONObject res = new JSONObject(json);
 			JSONArray tunnels = res.getJSONArray("tunnels");
 			boolean isActive = false;
@@ -90,12 +88,8 @@ public class LocalTunnel extends ApiFactory {
 		} 
 		//make sure tunnelID is not -1
 		String json = "";
-		try{
 			json = req.get("/"+Integer.toString(tunnelID));
-		}catch(IOException ioe){
-			//ioe.printStackTrace();
-			return false;
-		}
+
 		try{
 			JSONObject res = new JSONObject(json);
 			boolean isActive = res.getBoolean("active");
@@ -108,10 +102,8 @@ public class LocalTunnel extends ApiFactory {
 
 	private int getTunnelID() throws JSONException {
 		String json = "";
-		try{
-			json = req.get("?num=1&active=true");
-		}catch(IOException ioe){
-			ioe.printStackTrace();
+		json = req.get("?num=1&active=true");
+		if (json.isEmpty()) {
 			return -1;
 		}
 		try{
@@ -139,10 +131,8 @@ public class LocalTunnel extends ApiFactory {
 
 	private int getTunnelID(String tunnelname) throws JSONException {
 		String json = "";
-		try{
 			json = req.get("?active=true");
-		}catch(IOException ioe){
-			ioe.printStackTrace();
+		if (json.isEmpty()) {
 			return -1;
 		}
 		try {

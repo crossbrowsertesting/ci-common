@@ -18,7 +18,6 @@ public class Account extends ApiFactory {
 	public boolean testConnection() {
 		int userId = 0;
 		String email = "";
-		try {
 			String json = req.get("");
 			JSONObject results = new JSONObject(json);
 			userId = results.getInt("user_id");
@@ -30,23 +29,19 @@ public class Account extends ApiFactory {
 				connectionSuccessful = false;
 				return false;
 			}
-			
-		} catch (IOException e) {
-			connectionSuccessful = false;
-			return false;
-		}
+
 	}
 	public boolean sendMixpanelEvent(String eventName) {
 		// used for analytics with MixPanel
 		String json = "";
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("event_name", eventName);
-		try {
 			json = req.post("/sendMixpanelEvent", params);
-		} catch (IOException ioe) {
+		if (json.isEmpty()) {
 			return false;
+		} else {
+			return true;
 		}
-		return true;
 		
 	}
 }
