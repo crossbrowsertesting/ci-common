@@ -9,12 +9,16 @@ import org.apache.http.auth.AuthSchemeProvider;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.AuthSchemes;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Lookup;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.impl.auth.BasicSchemeFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 
 import java.util.Collections;
@@ -38,11 +42,18 @@ public class UnirestRequest {
     UnirestRequest(String path, String username, String password) {
         this.username = username;
         this.password = password;
-
-        requestURL += path;
+        init(path);
     }
     public UnirestRequest(String path) {
+        init(path);
+    }
+    private void init(String path) {
         requestURL += path;
+        // ignore cookies
+        RequestConfig globalConfig = RequestConfig.custom()
+                .setCookieSpec(CookieSpecs.IGNORE_COOKIES).build();
+        HttpClient httpclient = HttpClients.custom().setDefaultRequestConfig(globalConfig).build();
+        Unirest.setHttpClient(httpclient);
     }
     public void setProxy(String url, int port) {
         this.proxyUrl = url;
