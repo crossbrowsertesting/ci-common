@@ -9,8 +9,11 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class LocalTunnel extends ApiFactory {
@@ -193,7 +196,10 @@ public class LocalTunnel extends ApiFactory {
 		for (Map.Entry<String, String> entry : params.entrySet()) {
 			tunnelParams += entry.getKey() + entry.getValue();
 		}
-		String[] tunnelCommand = (tunnelLaunchCommand + tunnelParams).split("\\s+");
+		ArrayList<String> tunnelCommand = new ArrayList();
+		tunnelCommand.add(tunnelLaunchCommand);
+		tunnelCommand.addAll(Arrays.asList(tunnelParams.split("\\s+")));
+		log.fine("tunnel launch command: \""+tunnelLaunchCommand + tunnelParams+"\"");
 		//tunnelProcess = Runtime.getRuntime().exec(tunnelCommand);
 //		tunnelProcess = new ProcessBuilder().command(tunnelCommand).inheritIO().start(); // prints the output
 		tunnelProcess = new ProcessBuilder().command(tunnelCommand).start(); // doesnt print the output
@@ -206,7 +212,7 @@ public class LocalTunnel extends ApiFactory {
 		/*
 		 * Runs a subprocess that starts the node local tunnel using a custom path
 		 */
-		start("\""+localTunnelPath+"\"", new HashMap<String, String>());
+		start(localTunnelPath, new HashMap<String, String>());
 	}
 	@Deprecated
 	public void start() throws IOException {
@@ -242,6 +248,29 @@ public class LocalTunnel extends ApiFactory {
 		String json = req.delete("/"+Integer.toString(tunnelID), null);
 		if (pluginStartedTheTunnel) {
 			tunnelProcess.destroy();
+		}
+	}
+	public static void main(String[] args) {
+		LocalTunnel lt = new LocalTunnel("mikeh", "youllneverknow");
+		String tpath = "/Users/michaelhollister/Downloads/space dir/cbt_tunnels";
+		try {
+			lt.start(tpath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			TimeUnit.SECONDS.sleep(15);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		if (lt.isTunnelRunning) {
+			try {
+				lt.stop();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

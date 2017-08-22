@@ -191,8 +191,10 @@ public class Selenium extends ApiFactory{
 		params.put("name", name);
 		params.put("build", build);
 		OperatingSystem os = operatingSystems2.get(osApiName);
-		params.put("os", os.getName());
-		params.put("browser", os.browsers2.get(browserApiName).getName());
+		if (os != null) {
+			params.put("os", os.getName());
+			params.put("browser", os.browsers2.get(browserApiName).getName());
+		}
 		params.put("resolution",resolution);
 		return getSeleniumTestInfo2(params);
 	}

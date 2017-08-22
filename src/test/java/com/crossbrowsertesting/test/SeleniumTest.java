@@ -1,19 +1,16 @@
 package com.crossbrowsertesting.test;
 
-import org.junit.*;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
-
+import com.crossbrowsertesting.api.Selenium;
 import org.json.JSONObject;
-
-import java.net.MalformedURLException;
-import java.net.URL;
+import org.junit.*;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import com.crossbrowsertesting.api.Selenium;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Map;
+import java.util.Queue;
 
 /**
  * Unit test for Selenium
@@ -75,18 +72,15 @@ public class SeleniumTest extends APITestFactory{
 		} catch (IOException e) {
 			Assert.fail("Caught Exception");
 		}
-    }
-    @Test
-	public void testGetSeleniumTestIdCase1() {
 		try {
-			// Case 1
-			String testId = se.getSeleniumTestId("Jenkins Selenium Demo", "5", "Chrome35", "Mac10.9", "1024x768");
-			// 1st case should return that exact id though it already has the client_platform set
-			Assert.assertEquals("6800215", testId);
+			// fail case
+			Queue<Map<String, String>> allSeTestsInfo = se.getSeleniumTestInfo2("FakeNotRealAtAllTest", "-9", "FakeBrowser", "FakeOS", "FakeResolution");
+			Assert.assertEquals(allSeTestsInfo.size(), 0);
+			Assert.assertNull(allSeTestsInfo.poll());
 		} catch (IOException e) {
 			Assert.fail("Caught Exception");
 		}
-	}
+    }
     @Test
     public void testGetSeleniumTestIdCase2() {
     	try {
