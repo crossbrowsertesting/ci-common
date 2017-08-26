@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 
-@Ignore
 public class LocalTunnelTest extends APITestFactory {
 
     static LocalTunnel unnamedTunnel;
@@ -16,56 +15,47 @@ public class LocalTunnelTest extends APITestFactory {
 
     @BeforeClass
     public static void set() {
-        // unnamed tunnel
         unnamedTunnel = new LocalTunnel(username, apikey);
-        try {
-            unnamedTunnel.start(true);
-        } catch (URISyntaxException | IOException e) {
-            Assume.assumeNoException("Could not start unnamed tunnel", e);
-        }
-
-        // named tunnel
         namedTunnel = new LocalTunnel(username, apikey, tunnelName);
-        try {
-            namedTunnel.start(true);
-        } catch (URISyntaxException | IOException e) {
-            Assume.assumeNoException("Could not start named tunnel", e);
-        }
-
-        try {
-            TimeUnit.SECONDS.sleep(30);
-        } catch (InterruptedException e) {
-            Assume.assumeNoException("Could not wait for tunnels to start", e);
-        }
-
     }
 
     @AfterClass
     public static void clear() {
-        // unnamed tunnel
-        try {
-            unnamedTunnel.stop();
-        } catch (IOException | InterruptedException e) {
-            Assume.assumeNoException("Could not stop unnamed tunnel", e);
-        }
         unnamedTunnel = null;
-
-        // named tunnel
-        try {
-            namedTunnel.stop();
-        } catch (IOException | InterruptedException e) {
-            Assume.assumeNoException("Could not stop named tunnel", e);
-        }
         namedTunnel = null;
     }
     @Test
-    public void testQueryUnnamedTunnel() {
-        unnamedTunnel.queryTunnel();
-        Assert.assertTrue(unnamedTunnel.isTunnelRunning);
+    public void testQueryUnnamedTunnel() throws IOException, URISyntaxException {
+        unnamedTunnel.start(true);
+        try {
+            TimeUnit.SECONDS.sleep(30);
+            unnamedTunnel.queryTunnel();
+            Assert.assertTrue(unnamedTunnel.isTunnelRunning);
+            Assert.assertTrue(unnamedTunnel.tunnelID > 0);
+            Assert.assertTrue(unnamedTunnel.pluginStartedTheTunnel);
+            unnamedTunnel.stop();
+            TimeUnit.SECONDS.sleep(30);
+            unnamedTunnel.queryTunnel();
+            Assert.assertFalse(unnamedTunnel.isTunnelRunning);
+        } catch (InterruptedException e) {
+            Assume.assumeNoException("Could not wait for tunnels to start", e);
+        }
     }
     @Test
-    public void testQueryNamedTunnel() {
-        namedTunnel.queryTunnel();
-        Assert.assertTrue(namedTunnel.isTunnelRunning);
+    public void testQueryNamedTunnel() throws IOException, URISyntaxException {
+        namedTunnel.start(true);
+        try {
+            TimeUnit.SECONDS.sleep(30);
+            namedTunnel.queryTunnel();
+            Assert.assertTrue(namedTunnel.isTunnelRunning);
+            Assert.assertTrue(namedTunnel.tunnelID > 0);
+            Assert.assertTrue(namedTunnel.pluginStartedTheTunnel);
+            namedTunnel.stop();
+            TimeUnit.SECONDS.sleep(30);
+            namedTunnel.queryTunnel();
+            Assert.assertFalse(namedTunnel.isTunnelRunning);
+        } catch (InterruptedException e) {
+            Assume.assumeNoException("Could not wait for tunnels to start", e);
+        }
     }
 }

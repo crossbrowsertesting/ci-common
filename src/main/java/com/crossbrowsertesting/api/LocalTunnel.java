@@ -2,6 +2,8 @@ package com.crossbrowsertesting.api;
 
 import com.fizzed.jne.JNE;
 import com.fizzed.jne.Options;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class LocalTunnel extends ApiFactory {
@@ -28,6 +29,7 @@ public class LocalTunnel extends ApiFactory {
 	private final static Logger log = Logger.getLogger(LocalTunnel.class.getName());
 
 	private final String TUNNEL_VERSION = "v0.1.0";
+	private final String NODE_VERSION = "v6.11.2";
 	//private Path tunnelPath;
 	
 	public LocalTunnel(String username, String apikey, String tunnelname) {
@@ -44,24 +46,6 @@ public class LocalTunnel extends ApiFactory {
 	private void setupClass(String username, String apikey) {
 		this.username = username;
 		this.apikey = apikey;
-		/*
-		// lets get the full path to the cbt_tunnels binary
-		String projectRoot = System.getProperty("user.dir");
-		String tunnelVersion = "v0.1.0";
-		
-		if (System.getProperty("os.name").toLowerCase().contains("mac")) { // mac
-			this.tunnelPath = Paths.get(projectRoot, "cbt_tunnel", tunnelVersion, "cbt-tunnels-macos");
-		}else if (System.getProperty("os.name").toLowerCase().contains("win")) { // windows
-			this.tunnelPath = Paths.get(projectRoot, "cbt_tunnel", tunnelVersion, "cbt-tunnels-win.exe");
-		}else if (System.getProperty("os.name").toLowerCase().contains("nix") ||
-				System.getProperty("os.name").toLowerCase().contains("nux") ||
-				System.getProperty("os.name").toLowerCase().contains("aix")) { // linux / unix ?
-			this.tunnelPath = Paths.get(projectRoot, "cbt_tunnel", tunnelVersion, "cbt-tunnels-ubuntu");
-		}else {
-			this.tunnelPath = null;
-		}
-		*/
-
 	}
 	public void init() {
 		queryTunnel();
@@ -93,7 +77,7 @@ public class LocalTunnel extends ApiFactory {
 			} else {
 				tunnelID = getTunnelID();
 			}
-			log.fine("tunnelId: " + tunnelID);
+			log.finer("tunnelId: " + tunnelID);
 		}
 
 		if (tunnelID > -1) {
@@ -173,15 +157,10 @@ public class LocalTunnel extends ApiFactory {
 			return -1;
 		}
 	}
-
-	private void start(String tunnelLaunchCommand, Map<String, String> params) throws IOException {
-		/*
-		 * Actually runs the tunnel process.
-		 * The others just expose common parameters for the tunnel
-		 */
+	private String buildParamString(Map<String, String> params) {
 		params.put(" --username ", username);
 		params.put(" --authkey ", apikey);
-		if (this.tunnelname != null && !this.tunnelname.equals("")) { 
+		if (this.tunnelname != null && !this.tunnelname.equals("")) {
 			params.put(" --tunnelname ", tunnelname);
 		}
 		if (req.useProxy) {
@@ -196,18 +175,42 @@ public class LocalTunnel extends ApiFactory {
 		for (Map.Entry<String, String> entry : params.entrySet()) {
 			tunnelParams += entry.getKey() + entry.getValue();
 		}
-		ArrayList<String> tunnelCommand = new ArrayList();
-		tunnelCommand.add(tunnelLaunchCommand);
-		tunnelCommand.addAll(Arrays.asList(tunnelParams.split("\\s+")));
-		log.fine("tunnel launch command: \""+tunnelLaunchCommand + tunnelParams+"\"");
+		return tunnelParams;
+	}
+	private void run(ProcessBuilder tunnelProcessBuilder) throws IOException {
 		//tunnelProcess = Runtime.getRuntime().exec(tunnelCommand);
 //		tunnelProcess = new ProcessBuilder().command(tunnelCommand).inheritIO().start(); // prints the output
-		tunnelProcess = new ProcessBuilder().command(tunnelCommand).start(); // doesnt print the output
-
+		log.fine("starting local tunnel");
+		tunnelProcess = tunnelProcessBuilder.start(); // doesnt print the output
 		jenkinsStartedTunnel = true;
 		pluginStartedTheTunnel = true;
 	}
-
+	private void start(String tunnelLaunchCommand, Map<String, String> params) throws IOException {
+		/*
+		 * Actually runs the tunnel process.
+		 * The others just expose common parameters for the tunnel
+		 */
+		String tunnelParams = buildParamString(params);
+		ArrayList<String> tunnelCommand = new ArrayList();
+		tunnelCommand.add(tunnelLaunchCommand);
+		tunnelCommand.addAll(Arrays.asList(tunnelParams.split("\\s+")));
+		log.finer("tunnel launch command: \""+tunnelLaunchCommand + tunnelParams+"\"");
+		run(new ProcessBuilder().command(tunnelCommand));
+	}
+	private void start(String node, String cmd_start_js, Map<String, String> params) throws IOException {
+		/*
+		 * Actually runs the tunnel process.
+		 * The others just expose common parameters for the tunnel
+		 * Only using for linux right now
+		 */
+		String tunnelParams = buildParamString(params);
+		ArrayList<String> tunnelCommand = new ArrayList();
+		tunnelCommand.add(node);
+		tunnelCommand.add(cmd_start_js);
+		tunnelCommand.addAll(Arrays.asList(tunnelParams.split("\\s+")));
+		log.finer("tunnel launch command: \""+node+ " " + cmd_start_js + " " + tunnelParams+"\"");
+		run(new ProcessBuilder().command(tunnelCommand));
+	}
 	public void start(String localTunnelPath) throws IOException{
 		/*
 		 * Runs a subprocess that starts the node local tunnel using a custom path
@@ -221,17 +224,74 @@ public class LocalTunnel extends ApiFactory {
 		 */
 		start("cbt_tunnels", new HashMap<String, String>());
 	}
+
 	public void start(boolean useBinary) throws URISyntaxException, IOException {
 		/*
 		 * Runs a subprocess that starts the node local tunnel
 		 * either uses an installed version or the bundled binary
 		 */
 		if (useBinary) { // use the locked down binary
-			Options binarySearchOptions = new Options();
-			String tunnelPath = "/cbt_tunnels/" + TUNNEL_VERSION;
-			binarySearchOptions = binarySearchOptions.setResourcePrefix(tunnelPath.toString()); // instead of using the default /jne we're going to use /cbt_tunnels/v0.1.0
-			File binary = JNE.requireExecutable("cbt_tunnels", binarySearchOptions);
-			start(binary.getPath(), new HashMap<String, String>());
+			if (System.getProperty("os.name").toLowerCase().contains("nix") ||
+					System.getProperty("os.name").toLowerCase().contains("nux") ||
+					System.getProperty("os.name").toLowerCase().contains("aix")) {
+
+				log.fine("this is linux/unix system. we need to extract node version: " + NODE_VERSION + "and the local tunnel source code. Both will delete on exit");
+				Options localtunnelSearchOptions = new Options();
+				String tunnelPath = "/cbt_tunnels/" + TUNNEL_VERSION;
+				localtunnelSearchOptions = localtunnelSearchOptions.setResourcePrefix(tunnelPath.toString());
+				File sourceZip = JNE.findFile("source.zip", localtunnelSearchOptions);
+				try {
+					ZipFile zipFile = new ZipFile(sourceZip);
+					log.fine("about to extract local tunnel source code");
+					zipFile.extractAll(sourceZip.getParent());
+				} catch (ZipException e) {
+					log.fine("error extracting source code");
+				}
+				File localTunnelSource = new File(sourceZip.getParent(), "source");
+				log.fine("done extracting local tunnel source: "+localTunnelSource.getPath());
+				Options nodeBinarySearchOptions = new Options();
+				String nodePath = "/node/" + NODE_VERSION;
+				nodeBinarySearchOptions = nodeBinarySearchOptions.setResourcePrefix(nodePath.toString());
+				File nodeZip = JNE.findFile("node.zip", nodeBinarySearchOptions);
+				try {
+					ZipFile zipFile = new ZipFile(nodeZip);
+					log.fine("about to extract node version: "+NODE_VERSION);
+					zipFile.extractAll(nodeZip.getParent());
+				} catch (ZipException e) {
+					log.fine("error extracting node");
+				}
+				File nodeDir = new File(nodeZip.getParent(), "node");
+				File nodeBinary = new File(nodeDir, "bin/node");
+				nodeBinary.setExecutable(true);
+
+				File npmBinary = new File(nodeDir, "lib/node_modules/npm/bin/npm-cli.js");
+
+				ArrayList<String> tunnelDependenciesInstallCommand = new ArrayList();
+				tunnelDependenciesInstallCommand.add(nodeBinary.getPath());
+				tunnelDependenciesInstallCommand.add(npmBinary.getPath());
+				tunnelDependenciesInstallCommand.add("install");
+				tunnelDependenciesInstallCommand.add(localTunnelSource.toString());
+				tunnelDependenciesInstallCommand.add("--prefix");
+				tunnelDependenciesInstallCommand.add(localTunnelSource.toString());
+				log.fine("about to install cbt_tunnel dependencies");
+				Process installCBTTunnelDependencies = new ProcessBuilder().command(tunnelDependenciesInstallCommand).start();
+				try {
+					log.fine("waiting for dependencies to finish installing");
+					installCBTTunnelDependencies.waitFor();
+					log.info("finished installing dependencies. return code: "+ installCBTTunnelDependencies.exitValue());
+				} catch (InterruptedException e) {
+					log.finer("error while waiting");
+				}
+				File cmd_start_js = new File(localTunnelSource, "cmd_start.js");
+				start(nodeBinary.getPath(), cmd_start_js.getPath(), new HashMap<String, String>());
+
+			} else {
+				Options binarySearchOptions = new Options();
+				String tunnelPath = "/cbt_tunnels/" + TUNNEL_VERSION;
+				binarySearchOptions = binarySearchOptions.setResourcePrefix(tunnelPath.toString()); // instead of using the default /jne we're going to use /cbt_tunnels/v0.1.0
+				File binary = JNE.requireExecutable("cbt_tunnels", binarySearchOptions);
+				start(binary.getPath(), new HashMap<String, String>());
+			}
 
 		}
 		else { // use the npm installed version... must be in the PATH
@@ -244,33 +304,12 @@ public class LocalTunnel extends ApiFactory {
 		 * Stops the tunnel if the plugin started it
 		 */
 		queryTunnel();
+		log.fine("about to kill local tunnel");
 		@SuppressWarnings("unused")
 		String json = req.delete("/"+Integer.toString(tunnelID), null);
 		if (pluginStartedTheTunnel) {
 			tunnelProcess.destroy();
 		}
-	}
-	public static void main(String[] args) {
-		LocalTunnel lt = new LocalTunnel("mikeh", "youllneverknow");
-		String tpath = "/Users/michaelhollister/Downloads/space dir/cbt_tunnels";
-		try {
-			lt.start(tpath);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			TimeUnit.SECONDS.sleep(15);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		if (lt.isTunnelRunning) {
-			try {
-				lt.stop();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		log.fine("done killing local tunnel");
 	}
 }

@@ -94,3 +94,10 @@ buildNumber.properties
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
+
+# cbt_tunnel files that are not source code
+src/main/resources/cbt_tunnels/v0.1.0/source/README.md
+src/main/resources/cbt_tunnels/v0.1.0/source/examples/
+
+# log from npm
+npm-debug.log*
