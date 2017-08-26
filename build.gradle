@@ -39,8 +39,10 @@ github {
 		assets = [
 				'build/libs/' + project.name + '-' + project.version + '.jar',
 		]
+		prerelease = false
 
 }
+
 // get the github token from an environment variable $GITHUB_TOKEN
 githubRelease.doFirst {
 	if (System.getenv().containsKey("GITHUB_TOKEN")) {
@@ -48,14 +50,26 @@ githubRelease.doFirst {
 	} else {
 		throw new GradleException("GITHUB_TOKEN environment variable is not set")
 	}
+	if(project.hasProperty("prerelease") && project.getProperty("prerelease") == "true") {
+		// properly name the prerelease
+		github.prerelease = true
+		github.tagName = project.version + "-SNAPSHOT"
+		github.name = project.version + "-SNAPSHOT"
+		github.assets = [
+				'build/libs/' + project.name + '-' + project.version + '-SNAPSHOT.jar',
+		]
+	}
 }
-// clean and jar first
-githubRelease.dependsOn(clean, jar)
-
 task wrapper(type: Wrapper) {
 	gradleVersion = '4.1'
 }
 
+jar.doFirst {
+	// change the name if it is a prerelease
+	if(project.hasProperty("prerelease") && project.getProperty("prerelease") == "true") {
+		version = project.version + "-SNAPSHOT"
+	}
+}
 task testLocalTunnelsJar(type: Jar) {
 	manifest {
 		attributes 'Main-Class': 'com.crossbrowsertesting.api.LocalTunnel'
@@ -68,3 +82,5 @@ shadowJar {
 	}
 	appendix = "localtunnels"
 }
+// clean and jar first
+githubRelease.dependsOn(clean, jar)
