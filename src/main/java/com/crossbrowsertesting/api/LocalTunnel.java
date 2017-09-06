@@ -306,7 +306,7 @@ public class LocalTunnel extends ApiFactory {
 		queryTunnel();
 		log.fine("about to kill local tunnel");
 		@SuppressWarnings("unused")
-		String json = req.delete("/"+Integer.toString(tunnelID), null);
+		String json = req.delete("/"+Integer.toString(tunnelID));
 		if (pluginStartedTheTunnel) {
 			tunnelProcess.destroy();
 		}
