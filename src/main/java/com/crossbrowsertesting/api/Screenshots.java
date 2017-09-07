@@ -89,7 +89,7 @@ public class Screenshots extends ApiFactory{
 			}
 	}
 	private void populateSavedLoginProfiles() {
-		if (loginProfiles.size() < 1 || loginProfiles.get(0).isEmpty()) {
+		if (loginProfiles.size() < 1 || !loginProfiles.get(0).isEmpty()) {
 			loginProfiles.add(""); // add a blank one
 		}
 		String json="";
@@ -102,7 +102,7 @@ public class Screenshots extends ApiFactory{
 		}
 	}
 	private void populateSavedSeleniumScripts() {
-		if (loginProfiles.size() < 1 || loginProfiles.get(0).isEmpty()) {
+		if (loginProfiles.size() < 1 || !loginProfiles.get(0).isEmpty()) {
 			loginProfiles.add(""); // add a blank one
 		}
 		String json="";
@@ -140,6 +140,7 @@ public class Screenshots extends ApiFactory{
 	}
 	public HashMap<String, String> runScreenshot(List<Map<String, String>> browsers, String url) {
 		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("url", url);
 		params = addMultipleBrowsers(browsers, params);
 		return runScreenshotTest(params, true);
 	}

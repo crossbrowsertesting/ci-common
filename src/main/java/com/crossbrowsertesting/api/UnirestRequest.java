@@ -112,7 +112,6 @@ public class UnirestRequest {
                         Object value = entry.getValue();
                         if (value instanceof Collection) {
                             for (String listValue: (Collection<String>) value) {
-                                System.out.println(key + " " + listValue);
                                 if (requestWithBody == null) {
                                     requestWithBody = ((HttpRequestWithBody) req).field(key, listValue);
                                 } else {
@@ -120,7 +119,6 @@ public class UnirestRequest {
                                 }
                             }
                         } else {
-                            System.out.println(key + " " + value);
                             if (requestWithBody == null) {
                                 requestWithBody = ((HttpRequestWithBody) req).field(key, value);
                             } else {
