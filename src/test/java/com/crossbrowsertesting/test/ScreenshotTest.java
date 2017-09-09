@@ -57,13 +57,23 @@ public class ScreenshotTest extends APITestFactory {
         Assert.assertEquals(url, ssResults.get("url"));
     }
     @Test
-    public void testGetLoginProfiles() {
-        Assert.assertTrue(ss.browserLists.size() > 0); // should always at least be one
-        Assert.assertTrue(ss.browserLists.get(0).isEmpty()); // first one should always be an empty string
+    public void testGetBrowserLists() {
         if (ss.browserLists.size() > 1) {
             for (int i=1; i < ss.browserLists.size();i++) {
                 Assert.assertFalse(ss.browserLists.get(i).isEmpty());
             }
+        } else {
+            Assert.fail("There should be at least one browserlist");
+        }
+    }
+    @Test
+    public void testGetLoginProfiles() {
+        if (ss.loginProfiles.size() > 1) {
+            for (int i=1; i < ss.loginProfiles.size();i++) {
+                Assert.assertFalse(ss.loginProfiles.get(i).isEmpty());
+            }
+        } else {
+            Assert.fail("There should be at least one loginprofiles or screenshot test selenium scripts");
         }
     }
 }

@@ -1,97 +1,39 @@
 package com.crossbrowsertesting.api;
 
-import com.crossbrowsertesting.configurations.Browser;
-import com.crossbrowsertesting.configurations.OperatingSystem;
-import com.crossbrowsertesting.configurations.Resolution;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.*;
 
-public class Screenshots extends ApiFactory{
+public class Screenshots extends TestTypeApiFactory{
 
 	public List<String> browserLists;
 	public List<String> loginProfiles;
-
-	@Deprecated
-	public List<OperatingSystem> operatingSystems;
-	public Map<String, OperatingSystem> operatingSystems2; //getting from a Map is O(1)
-	public String configurationsAsJson;
 
 	public Screenshots(String username, String apikey) {
 		super("screenshots", username, apikey);
 		init();	
 	}
 	public void init() {
+		super.init();
 		browserLists = new LinkedList<String>();
 		loginProfiles = new LinkedList<String>();
-
-		operatingSystems = new LinkedList<OperatingSystem>();
-		operatingSystems2 = new HashMap<String, OperatingSystem>();
-		configurationsAsJson = "";
-
-		populateBrowsers();
 		populateBrowserLists();
 		populateSavedLoginProfiles();
 		populateSavedSeleniumScripts();
 	}
-	private void populateBrowsers() {
-		String json="";
-		json = req.get("/browsers");
-		try {
-			operatingSystems = new LinkedList<OperatingSystem>();
-			operatingSystems2 = new HashMap<String, OperatingSystem>();
-		}catch (JSONException jsone) {}
-		configurationsAsJson = json; // for TeamCity
-		JSONArray j_configurations = new JSONArray(json);
-		for(int i=0; i<j_configurations.length();i++) {
-			//parse out the OS info
-			JSONObject j_config = j_configurations.getJSONObject(i);
-			String os_api_name = j_config.getString("api_name");
-			String os_name = j_config.getString("name");
-			OperatingSystem operatingSystem = new OperatingSystem(os_api_name, os_name);
-			//parse out the browser info for the OS
-			JSONArray j_browsers = j_config.getJSONArray("browsers");
-			for(int j=0;j<j_browsers.length();j++) {
-				JSONObject j_browser = j_browsers.getJSONObject(j);
-				String browser_api_name = j_browser.getString("api_name");
-				String browser_name = j_browser.getString("name");
-				String browser_icon_class = j_browser.getString("icon_class");
-				Browser browser = new Browser(browser_api_name, browser_name, browser_icon_class);
-				operatingSystem.browsers.add(browser);
-				operatingSystem.browsers2.put(browser_api_name, browser);
-			}
-			//parse out the resolution info for the OS
-			JSONArray resolutions = j_config.getJSONArray("resolutions");
-			for(int j=0;j<resolutions.length();j++) {
-				JSONObject j_resolution = resolutions.getJSONObject(j);
-				String resolution_name = j_resolution.getString("name");
-				Resolution resolution = new Resolution(resolution_name);
-				operatingSystem.resolutions.add(resolution);
-				operatingSystem.resolutions2.put(resolution_name, resolution);
-
-			}
-			operatingSystems.add(operatingSystem);
-			operatingSystems2.put(os_api_name, operatingSystem);
-		}
-	}
 	private void populateBrowserLists() {
-		browserLists.add(""); //add blank one
 		String json="";
-			json = req.get("/browserlists");
-			JSONArray j_browserLists = new JSONArray(json);
-			for(int i=0; i<j_browserLists.length();i++) {
-				JSONObject j_browserList = j_browserLists.getJSONObject(i);
-				String browser_list_name = j_browserList.getString("browser_list_name");
-				browserLists.add(browser_list_name);
-			}
+		json = req.get("/browserlists");
+		JSONArray j_browserLists = new JSONArray(json);
+		for(int i=0; i<j_browserLists.length();i++) {
+			JSONObject j_browserList = j_browserLists.getJSONObject(i);
+			String browser_list_name = j_browserList.getString("browser_list_name");
+			browserLists.add(browser_list_name);
+		}
 	}
 	private void populateSavedLoginProfiles() {
-		if (loginProfiles.size() < 1 || !loginProfiles.get(0).isEmpty()) {
-			loginProfiles.add(""); // add a blank one
-		}
 		String json="";
 		json = req.get("/loginprofiles/");
 		JSONArray j_loginProfiles = new JSONArray(json);
@@ -102,9 +44,6 @@ public class Screenshots extends ApiFactory{
 		}
 	}
 	private void populateSavedSeleniumScripts() {
-		if (loginProfiles.size() < 1 || !loginProfiles.get(0).isEmpty()) {
-			loginProfiles.add(""); // add a blank one
-		}
 		String json="";
 		json = req.get("/seleniumscripts");
 		JSONArray j_seleniumScripts = new JSONArray(json);
