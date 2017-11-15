@@ -22,7 +22,7 @@ public class LocalTunnel extends ApiFactory {
 	@Deprecated
 	public boolean jenkinsStartedTunnel = false; // variable name change
 	public boolean pluginStartedTheTunnel = false;
-	public Process tunnelProcess;
+	public Process tunnelProcess = null;
 	public int tunnelID = -1;
 	private String username, apikey, tunnelname = "";
 
@@ -307,7 +307,7 @@ public class LocalTunnel extends ApiFactory {
 		log.fine("about to kill local tunnel");
 		@SuppressWarnings("unused")
 		String json = req.delete("/"+Integer.toString(tunnelID));
-		if (pluginStartedTheTunnel) {
+		if (pluginStartedTheTunnel && tunnelProcess != null) {
 			tunnelProcess.destroy();
 		}
 		log.fine("done killing local tunnel");

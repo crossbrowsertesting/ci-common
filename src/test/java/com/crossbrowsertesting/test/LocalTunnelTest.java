@@ -28,14 +28,22 @@ public class LocalTunnelTest extends APITestFactory {
     public void testQueryUnnamedTunnel() throws IOException, URISyntaxException {
         unnamedTunnel.start(true);
         try {
-            TimeUnit.SECONDS.sleep(30);
-            unnamedTunnel.queryTunnel();
+            int count = 0;
+            do {
+                count++;
+                TimeUnit.SECONDS.sleep(30);
+                unnamedTunnel.queryTunnel();
+            }while(!unnamedTunnel.isTunnelRunning && count < 6);
             Assert.assertTrue(unnamedTunnel.isTunnelRunning);
             Assert.assertTrue(unnamedTunnel.tunnelID > 0);
             Assert.assertTrue(unnamedTunnel.pluginStartedTheTunnel);
+            count = 0;
             unnamedTunnel.stop();
-            TimeUnit.SECONDS.sleep(30);
-            unnamedTunnel.queryTunnel();
+            do {
+                count++;
+                TimeUnit.SECONDS.sleep(30);
+                unnamedTunnel.queryTunnel();
+            }while(unnamedTunnel.isTunnelRunning && count<4);
             Assert.assertFalse(unnamedTunnel.isTunnelRunning);
         } catch (InterruptedException e) {
             Assume.assumeNoException("Could not wait for tunnels to start", e);
@@ -45,14 +53,22 @@ public class LocalTunnelTest extends APITestFactory {
     public void testQueryNamedTunnel() throws IOException, URISyntaxException {
         namedTunnel.start(true);
         try {
-            TimeUnit.SECONDS.sleep(30);
-            namedTunnel.queryTunnel();
+            int count = 0;
+            do {
+                count++;
+                TimeUnit.SECONDS.sleep(30);
+                namedTunnel.queryTunnel();
+            }while(!namedTunnel.isTunnelRunning && count<6);
             Assert.assertTrue(namedTunnel.isTunnelRunning);
             Assert.assertTrue(namedTunnel.tunnelID > 0);
             Assert.assertTrue(namedTunnel.pluginStartedTheTunnel);
             namedTunnel.stop();
-            TimeUnit.SECONDS.sleep(30);
-            namedTunnel.queryTunnel();
+            count = 0;
+            do {
+                count++;
+                TimeUnit.SECONDS.sleep(30);
+                namedTunnel.queryTunnel();
+            }while(namedTunnel.isTunnelRunning && count < 4);
             Assert.assertFalse(namedTunnel.isTunnelRunning);
         } catch (InterruptedException e) {
             Assume.assumeNoException("Could not wait for tunnels to start", e);

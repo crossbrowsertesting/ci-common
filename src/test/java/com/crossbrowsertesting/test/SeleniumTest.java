@@ -27,9 +27,10 @@ public class SeleniumTest extends APITestFactory{
 			DesiredCapabilities caps = new DesiredCapabilities();
 			caps.setCapability("name", "CICommonTest");
 			caps.setCapability("build", "1.0");
-			caps.setCapability("browser_api_name", "IE11");
-			caps.setCapability("os_api_name", "Win10");
-			caps.setCapability("screen_resolution", "1366x768");
+			caps.setCapability("browserName", "Internet Explorer");
+			caps.setCapability("version", "11");
+			caps.setCapability("platform", "Windows 10");
+			caps.setCapability("screenResolution", "1366x768");
 			RemoteWebDriver driver = new RemoteWebDriver(new URL("http://" + username + ":" + apikey +"@hub.crossbrowsertesting.com:80/wd/hub"), caps);
 			driver.get("http://crossbrowsertesting.github.io/selenium_example_page.html");
 			driver.quit();

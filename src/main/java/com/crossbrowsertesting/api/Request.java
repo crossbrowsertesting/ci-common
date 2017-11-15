@@ -1,9 +1,6 @@
 package com.crossbrowsertesting.api;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -12,15 +9,11 @@ import java.net.URL;
 import java.net.Proxy;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
+
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.HttpRequest;
 
 /*
  * Instantiate a Request object to make api requests
@@ -63,114 +56,158 @@ public class Request {
 		useProxyCredentials = true;
 	}
 	
-	public String get(String urlStr) throws IOException{
+	public String get(String urlStr){
 		/*
 		 * Get request
 		 * returns JSON as a string
 		 */
-		String requestString = requestURL + urlStr;
-		URL url = new URL(requestString);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		if (useProxy) {
-			Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUrl, proxyPort));
-			conn = (HttpURLConnection) url.openConnection(proxy);
-			if (useProxyCredentials) {
-				Authenticator.setDefault(new SimpleAuthenticator(proxyUsername, proxyPassword));
+		try {
+			String requestString = requestURL + urlStr;
+			URL url = new URL(requestString);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			if (useProxy) {
+				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUrl, proxyPort));
+				conn = (HttpURLConnection) url.openConnection(proxy);
+				if (useProxyCredentials) {
+					Authenticator.setDefault(new SimpleAuthenticator(proxyUsername, proxyPassword));
+				}
 			}
+			conn.setRequestMethod("GET");
+			if (username != null && password != null) {
+				String userpassEncoding = Base64.encodeBase64String((username + ":" + password).getBytes());
+				conn.setRequestProperty("Authorization", "Basic " + userpassEncoding);
+			}
+			if (conn.getResponseCode() != 200) {
+				throw new IOException(conn.getResponseMessage());
+			}
+			// Buffer the result into a string
+			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			StringBuilder sb = new StringBuilder();
+			String line;
+			while ((line = rd.readLine()) != null) {
+				sb.append(line);
+			}
+			rd.close();
+			conn.disconnect();
+			return sb.toString();
+		} catch(IOException ioe) {
+			return "";
 		}
-		conn.setRequestMethod("GET");
-		if (username != null && password != null) {
-			String userpassEncoding = Base64.encodeBase64String((username+":"+password).getBytes());
-			conn.setRequestProperty("Authorization", "Basic " + userpassEncoding);
-		}
-		if (conn.getResponseCode() != 200) {
-			throw new IOException(conn.getResponseMessage());
-		}
-		// Buffer the result into a string
-		BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-		StringBuilder sb = new StringBuilder();
-		String line;
-		while ((line = rd.readLine()) != null) {
-			sb.append(line);
-		}
-		rd.close();
-		conn.disconnect();
-		return sb.toString();
 	}
-	public String get(String urlStr, Map<String, String> params) throws IOException {
+	public String get(String urlStr, Map<String, String> params){
 		urlStr += "?";
 		int index = 1;
-		for (Map.Entry<String, String> entry : params.entrySet()) {
-	   		urlStr += entry.getKey() +"=" + URLEncoder.encode(entry.getValue(), "UTF-8");
-    		if (index < params.size()) {
-    			urlStr += "&";
-    		}
-    		index++;			
-		}
+		try {
+
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				urlStr += entry.getKey() +"=" + URLEncoder.encode(entry.getValue(), "UTF-8");
+				if (index < params.size()) {
+    				urlStr += "&";
+    			}
+    			index++;
+			}
+		} catch (UnsupportedEncodingException e) {}
 		return get(urlStr);
 	}
-	private String doRequestWithFormParams(String method, String urlStr, Map<String, String> params) throws IOException {
+	private String doRequestWithFormParams(String method, String urlStr, Map<String, Object> params) {
 		/*
 		 * any general request with form data parameters ie. POST, DELETE, PUT
 		 * returns JSON as a string
 		 */
 		String urlParameters = "";
-		if (params != null) {
-			int index = 1;
-	    	for (Map.Entry<String, String> entry : params.entrySet()) {
-	    		urlParameters += entry.getKey() +"=" + entry.getValue();
-	    		if (index < params.size()) {
-	    			urlParameters += "&";
-	    		}
-	    		index++;
-	    	}
-		}
-    	byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
-		URL url = new URL(requestURL + urlStr);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		if (useProxy) {
-			Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUrl, proxyPort));
-			conn = (HttpURLConnection) url.openConnection(proxy);
-			if (useProxyCredentials) {
-				Authenticator.setDefault(new SimpleAuthenticator(proxyUsername, proxyPassword));
+		try {
+			if (params != null && !params.isEmpty()) {
+				for (Map.Entry<String, Object> entry : params.entrySet()) {
+					String key = entry.getKey();
+					Object value = entry.getValue();
+					if (!urlParameters.isEmpty()) {
+						urlParameters += "&";
+					}
+					if (value instanceof Collection) {
+						for (String listValue : (Collection<String>) value) {
+							if (!urlParameters.isEmpty()) {
+								urlParameters += "&";
+							}
+							urlParameters += key + "=" + listValue;
+						}
+					} else {
+						urlParameters += key + "=" + value;
+					}
+				}
 			}
+			/*
+			String urlParameters = "";
+			if (params != null) {
+				int index = 1;
+				for (Map.Entry<String, String> entry : params.entrySet()) {
+					urlParameters += entry.getKey() + "=" + entry.getValue();
+					if (index < params.size()) {
+						urlParameters += "&";
+					}
+					index++;
+				}
+			}
+			*/
+			byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
+			URL url = new URL(requestURL + urlStr);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			if (useProxy) {
+				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyUrl, proxyPort));
+				conn = (HttpURLConnection) url.openConnection(proxy);
+				if (useProxyCredentials) {
+					Authenticator.setDefault(new SimpleAuthenticator(proxyUsername, proxyPassword));
+				}
+			}
+			conn.setRequestMethod(method);
+			if (username != null && password != null) {
+				String userpassEncoding = Base64.encodeBase64String((username + ":" + password).getBytes());
+				conn.setRequestProperty("Authorization", "Basic " + userpassEncoding);
+			}
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			conn.setRequestProperty("charset", "utf-8");
+			conn.setRequestProperty("Content-Length", Integer.toString(postData.length));
+			conn.setDoOutput(true);
+			conn.setUseCaches(false);
+			DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+			//wr.writeBytes(urlParameters);
+			wr.write(postData);
+			wr.flush();
+			wr.close();
+			if (conn.getResponseCode() != 200) {
+				throw new IOException(conn.getResponseMessage());
+			}
+			// Buffer the result into a string
+			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			StringBuilder sb = new StringBuilder();
+			String line;
+			while ((line = rd.readLine()) != null) {
+				sb.append(line);
+			}
+			rd.close();
+			conn.disconnect();
+			return sb.toString();
+		}catch (IOException ioe) {
+			ioe.printStackTrace();
+			return "";
 		}
-		conn.setRequestMethod(method);
-		if (username != null && password != null) {
-			String userpassEncoding = Base64.encodeBase64String((username+":"+password).getBytes());
-			conn.setRequestProperty("Authorization", "Basic " + userpassEncoding);
-		}
-		conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-		conn.setRequestProperty( "charset", "utf-8");
-		conn.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
-		conn.setDoOutput(true);
-		conn.setUseCaches(false);
-		DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
-		//wr.writeBytes(urlParameters);
-		wr.write(postData);
-		wr.flush();
-		wr.close();
-		if (conn.getResponseCode() != 200) {
-			throw new IOException(conn.getResponseMessage());
-		}
-		// Buffer the result into a string
-		BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-		StringBuilder sb = new StringBuilder();
-		String line;
-		while ((line = rd.readLine()) != null) {
-			sb.append(line);
-		}
-		rd.close();
-		conn.disconnect();
-		return sb.toString();
 	}
-	public String post(String urlStr, Map<String, String> params) throws IOException {
+	public String post(String urlStr, Map<String, String> params){
+		return doRequestWithFormParams("POST", urlStr, Collections.<String, Object>unmodifiableMap(params));
+	}
+	public String post(String urlStr, Map<String, Object> params, boolean containsLists) {
+		String url = requestURL + urlStr;
 		return doRequestWithFormParams("POST", urlStr, params);
 	}
-	public String put(String urlStr, Map<String, String> params) throws IOException {
-		return doRequestWithFormParams("PUT", urlStr, params);
+	public String put(String urlStr, Map<String, String> params){
+		return doRequestWithFormParams("PUT", urlStr, Collections.<String, Object>unmodifiableMap(params));
 	}
-	public String delete(String urlStr, Map<String, String> params) throws IOException {
+	public String delete(String urlStr) {
+		return delete(urlStr, null, false);
+	}
+	public String delete(String urlStr, Map<String, String> params){
+		return doRequestWithFormParams("DELETE", urlStr, Collections.<String, Object>unmodifiableMap(params));
+	}
+	public String delete(String urlStr, Map<String, Object> params, boolean containsLists) {
 		return doRequestWithFormParams("DELETE", urlStr, params);
 	}
 

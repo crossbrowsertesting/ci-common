@@ -42,7 +42,10 @@ public class ScreenshotTest extends APITestFactory {
     @Test
     public void testRunScreenshotsWithBrowserList() {
         ssResults = ss.runScreenshotTest(browserListName, url);
-        Assert.assertFalse(ssResults.containsKey("error"));
+        if (ssResults.containsKey("error")) {
+            Assert.fail(ssResults.get("error"));
+        }
+        //Assert.assertFalse(ssResults.containsKey("error"));
         Assert.assertTrue(ssResults.containsKey("screenshot_test_id") && !ssResults.get("screenshot_test_id").isEmpty());
         Assert.assertEquals(url, ssResults.get("url"));
     }
@@ -52,7 +55,10 @@ public class ScreenshotTest extends APITestFactory {
         browsers.add(makeBrowserMap("Win10", "Edge14", "1024x768"));
         browsers.add(makeBrowserMap("Win8.1", "IE11", "1024x768"));
         ssResults = ss.runScreenshot(browsers, url);
-        Assert.assertFalse(ssResults.containsKey("error"));
+        if (ssResults.containsKey("error")) {
+            Assert.fail(ssResults.get("error"));
+        }
+        //Assert.assertFalse(ssResults.containsKey("error"));
         Assert.assertTrue(ssResults.containsKey("screenshot_test_id") && !ssResults.get("screenshot_test_id").isEmpty());
         Assert.assertEquals(url, ssResults.get("url"));
     }
