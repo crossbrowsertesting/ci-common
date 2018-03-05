@@ -57,10 +57,35 @@ public class SeleniumTest extends APITestFactory{
 	public void testGetSeleniumBrowser() {
         Assert.assertTrue( !se.operatingSystems.isEmpty() );
         Assert.assertTrue( !se.operatingSystems2.isEmpty() );
+
+        // check mobile
+		Assert.assertTrue(se.operatingSystems2.get("iPadAir-iOS8Sim").isMobile());
         Assert.assertEquals(se.operatingSystems2.get("iPadAir-iOS8Sim").getApiName(),"iPadAir-iOS8Sim");
         Assert.assertEquals(se.operatingSystems2.get("iPadAir-iOS8Sim").getName(),"iPad Air / 8.1 Simulator");
+		Assert.assertEquals(se.operatingSystems2.get("iPadAir-iOS8Sim").getDeviceName(),"iPad Air Simulator");
+		Assert.assertEquals(se.operatingSystems2.get("iPadAir-iOS8Sim").getPlatformName(),"iOS");
+		Assert.assertEquals(se.operatingSystems2.get("iPadAir-iOS8Sim").getPlatformVersion(),"8.1");
+		Assert.assertTrue(se.operatingSystems2.get("iPadAir-iOS8Sim").getPlatform ().isEmpty());
+		Assert.assertEquals(se.operatingSystems2.get("iPadAir-iOS8Sim").browsers2.get("MblSafari8.0").getIconClass(), "safari-mobile");
+		Assert.assertEquals(se.operatingSystems2.get("iPadAir-iOS8Sim").browsers2.get("MblSafari8.0").getBrowserName(), "Safari");
+		Assert.assertTrue(se.operatingSystems2.get("iPadAir-iOS8Sim").browsers2.get("MblSafari8.0").getVersion().isEmpty());
+		Assert.assertEquals(se.operatingSystems2.get("iPadAir-iOS8Sim").resolutions2.get("1536x2048").getDeviceOrientation(), "portrait");
+		Assert.assertEquals(se.operatingSystems2.get("iPadAir-iOS8Sim").resolutions2.get("1536x2048").getScreenResolution(), "1536x2048");
 
-    }
+		// check desktop
+		Assert.assertFalse(se.operatingSystems2.get("Mac10.13").isMobile());
+		Assert.assertEquals(se.operatingSystems2.get("Mac10.13").getApiName(),"Mac10.13");
+		Assert.assertEquals(se.operatingSystems2.get("Mac10.13").getName(),"Mac OSX 10.13");
+		Assert.assertEquals(se.operatingSystems2.get("Mac10.13").getPlatform(),"Mac OSX 10.13");
+		Assert.assertTrue(se.operatingSystems2.get("Mac10.13").getPlatformVersion().isEmpty());
+		Assert.assertTrue(se.operatingSystems2.get("Mac10.13").getPlatformName().isEmpty());
+		Assert.assertTrue(se.operatingSystems2.get("Mac10.13").getDeviceName().isEmpty());
+		Assert.assertEquals(se.operatingSystems2.get("Mac10.13").browsers2.get("Safari11").getIconClass(), "safari");
+		Assert.assertEquals(se.operatingSystems2.get("Mac10.13").browsers2.get("Safari11").getBrowserName(), "Safari");
+		Assert.assertEquals(se.operatingSystems2.get("Mac10.13").browsers2.get("Safari11").getVersion(), "11");
+		Assert.assertTrue(se.operatingSystems2.get("Mac10.13").resolutions2.get("1024x768").getDeviceOrientation().isEmpty());
+		Assert.assertEquals(se.operatingSystems2.get("Mac10.13").resolutions2.get("1024x768").getScreenResolution(), "1024x768");
+	}
     
     @Test
     public void testGetSeleniumTestInfo() {

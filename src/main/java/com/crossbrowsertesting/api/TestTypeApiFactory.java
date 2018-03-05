@@ -67,7 +67,8 @@ public abstract class TestTypeApiFactory extends ApiFactory{
             operatingSystems2.put(os_api_name, operatingSystem);
         }
     }
-    private void populateBrowsers() {
+    // this only for screenshots now
+    void populateBrowsers() {
         String json="";
         json = req.get("/browsers");
         try {
@@ -81,7 +82,8 @@ public abstract class TestTypeApiFactory extends ApiFactory{
             JSONObject j_config = j_configurations.getJSONObject(i);
             String os_api_name = j_config.getString("api_name");
             String os_name = j_config.getString("name");
-            OperatingSystem operatingSystem = new OperatingSystem(os_api_name, os_name);
+            String device = j_config.getString("device");
+            OperatingSystem operatingSystem = new OperatingSystem(os_api_name, os_name, device);
             //parse out the browser info for the OS
             JSONArray j_browsers = j_config.getJSONArray("browsers");
             for(int j=0;j<j_browsers.length();j++) {
@@ -89,7 +91,7 @@ public abstract class TestTypeApiFactory extends ApiFactory{
                 String browser_api_name = j_browser.getString("api_name");
                 String browser_name = j_browser.getString("name");
                 String browser_icon_class = j_browser.getString("icon_class");
-                Browser browser = new Browser(browser_api_name, browser_name, browser_icon_class);
+                Browser browser = new Browser(browser_api_name, browser_name, browser_icon_class, device);
                 operatingSystem.browsers.add(browser);
                 operatingSystem.browsers2.put(browser_api_name, browser);
             }
@@ -98,7 +100,7 @@ public abstract class TestTypeApiFactory extends ApiFactory{
             for(int j=0;j<resolutions.length();j++) {
                 JSONObject j_resolution = resolutions.getJSONObject(j);
                 String resolution_name = j_resolution.getString("name");
-                Resolution resolution = new Resolution(resolution_name);
+                Resolution resolution = new Resolution(resolution_name, device);
                 operatingSystem.resolutions.add(resolution);
                 operatingSystem.resolutions2.put(resolution_name, resolution);
 

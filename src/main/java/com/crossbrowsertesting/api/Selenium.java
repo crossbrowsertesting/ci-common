@@ -1,7 +1,10 @@
 package com.crossbrowsertesting.api;
 
+import com.crossbrowsertesting.configurations.Browser;
 import com.crossbrowsertesting.configurations.OperatingSystem;
+import com.crossbrowsertesting.configurations.Resolution;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -21,7 +24,70 @@ public class Selenium extends TestTypeApiFactory{
 		super("selenium", username, apikey);
 		super.init();
 	}
+	@Override
+	void populateBrowsers() {
+		String json="";
+		json = req.get("/browsers");
+		try {
+			operatingSystems = new LinkedList<OperatingSystem>();
+			operatingSystems2 = new HashMap<String, OperatingSystem>();
+		}catch (JSONException jsone) {}
+		configurationsAsJson = json; // for TeamCity
+		JSONArray j_configurations = new JSONArray(json);
+		for(int i=0; i<j_configurations.length();i++) {
+			//parse out the OS info
+			JSONObject j_config = j_configurations.getJSONObject(i);
+			String os_api_name = j_config.getString("api_name");
+			String os_name = j_config.getString("name");
+			String device = j_config.getString("device");
 
+			OperatingSystem operatingSystem = new OperatingSystem(os_api_name, os_name, device);
+			if (!operatingSystem.isMobile()) {
+				// set desktop caps
+				operatingSystem.setPlatform(j_config.getJSONObject("caps").getString("platform"));
+			} else {
+				// set mobile caps
+				JSONObject caps = j_config.getJSONObject("caps");
+				operatingSystem.setDeviceName(caps.getString("deviceName"));
+				operatingSystem.setPlatformName(caps.getString("platformName"));
+				operatingSystem.setPlatformVersion(caps.getString("platformVersion"));
+			}
+			//parse out the browser info for the OS
+			JSONArray j_browsers = j_config.getJSONArray("browsers");
+			for(int j=0;j<j_browsers.length();j++) {
+				JSONObject j_browser = j_browsers.getJSONObject(j);
+				String browser_api_name = j_browser.getString("api_name");
+				String browser_name = j_browser.getString("name");
+				String browser_icon_class = j_browser.getString("icon_class");
+				JSONObject browser_caps = j_browser.getJSONObject("caps");
+				Browser browser = new Browser(browser_api_name, browser_name, browser_icon_class, device, browser_caps.getString("browserName"));
+				if (!browser.isMobile()) {
+					// set extra desktop caps
+					browser.setVersion(browser_caps.getString("version"));
+				}
+				operatingSystem.browsers.add(browser);
+				operatingSystem.browsers2.put(browser_api_name, browser);
+			}
+			//parse out the resolution info for the OS
+			JSONArray resolutions = j_config.getJSONArray("resolutions");
+			for(int j=0;j<resolutions.length();j++) {
+				JSONObject j_resolution = resolutions.getJSONObject(j);
+				String resolution_name = j_resolution.getString("name");
+				JSONObject resolution_caps = j_resolution.getJSONObject("caps");
+				Resolution resolution = new Resolution(resolution_name, device);
+				if (operatingSystem.isMobile()) {
+					// set mobile caps
+					resolution.setDeviceOrientation(resolution_caps.getString("deviceOrientation"));
+				}
+				// desktops have a 'screenResolution' cap but it has the same value as 'name'
+				operatingSystem.resolutions.add(resolution);
+				operatingSystem.resolutions2.put(resolution_name, resolution);
+
+			}
+			operatingSystems.add(operatingSystem);
+			operatingSystems2.put(os_api_name, operatingSystem);
+		}
+	}
 	@Deprecated
 	public Queue<Map<String, String>> getSeleniumTestInfo(String name, String build, String browserApiName, String osApiName, String resolution) throws IOException {
 		Map<String, String> params = new HashMap<String, String>();
