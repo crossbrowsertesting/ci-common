@@ -24,9 +24,16 @@ abstract class InfoPrototype {
 	public String getApiName() {
 		return api_name;
 	}
+	private String getDevice() {
+		try {
+			return this.device;
+		}catch (NullPointerException npe) {
+			return "";
+		}
+	}
 
 	public boolean isMobile() {
-		if (device.equals("mobile")) {
+		if (getDevice().equals("mobile")) {
 			return true;
 		} else {
 			return false;
