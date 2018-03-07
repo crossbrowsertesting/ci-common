@@ -17,12 +17,19 @@ public class Selenium extends TestTypeApiFactory{
 
 	public Selenium() {
 		super("selenium");
-		super.init();
+		init();
 		
 	}
 	public Selenium(String username, String apikey) {
 		super("selenium", username, apikey);
-		super.init();
+		init();
+	}
+	@Override
+	public void init() {
+		operatingSystems = new LinkedList<OperatingSystem>();
+		operatingSystems2 = new HashMap<String, OperatingSystem>();
+		configurationsAsJson = "";
+		populateBrowsers();
 	}
 	@Override
 	void populateBrowsers() {
@@ -222,5 +229,11 @@ public class Selenium extends TestTypeApiFactory{
 		 */
 		String fullContributer = contributer+contributerVersion+"|v"+pluginVersion;
 		apiSetAction(seleniumTestId, "set_contributer", "contributer", fullContributer);	
+	}
+	public static void main(String[] args) {
+		Selenium s = new Selenium();
+		Screenshots ss = new Screenshots("mikeh", "youllneverknow");
+		System.out.println(s.operatingSystems.get(0).isMobile());
+		System.out.println(ss.operatingSystems.get(0).isMobile());
 	}
 }
