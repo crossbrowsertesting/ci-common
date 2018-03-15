@@ -2,8 +2,6 @@ package com.crossbrowsertesting.api;
 
 import com.fizzed.jne.JNE;
 import com.fizzed.jne.Options;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +26,7 @@ public class LocalTunnel extends ApiFactory {
 
 	private final static Logger log = Logger.getLogger(LocalTunnel.class.getName());
 
-	private final String TUNNEL_VERSION = "v0.1.0";
+	private final String TUNNEL_VERSION = "v0.9.3";
 	private final String NODE_VERSION = "v6.11.2";
 	//private Path tunnelPath;
 	
@@ -224,17 +222,23 @@ public class LocalTunnel extends ApiFactory {
 		 */
 		start("cbt_tunnels", new HashMap<String, String>());
 	}
+	public void start(boolean useBinary) throws IOException, URISyntaxException {
+		// default bypass to true
+		start(useBinary, true);
+	}
 
-	public void start(boolean useBinary) throws URISyntaxException, IOException {
+	public void start(boolean useBinary, boolean bypass) throws URISyntaxException, IOException {
 		/*
 		 * Runs a subprocess that starts the node local tunnel
 		 * either uses an installed version or the bundled binary
 		 */
+		HashMap params = new HashMap<String, String>();
+		params.put(" --bypass ", Boolean.toString(bypass));
 		if (useBinary) { // use the locked down binary
-			if (System.getProperty("os.name").toLowerCase().contains("nix") ||
-					System.getProperty("os.name").toLowerCase().contains("nux") ||
-					System.getProperty("os.name").toLowerCase().contains("aix")) {
 
+			// old way
+			/*
+			if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
 				log.fine("this is linux/unix system. we need to extract node version: " + NODE_VERSION + "and the local tunnel source code. Both will delete on exit");
 				Options localtunnelSearchOptions = new Options();
 				String tunnelPath = "/cbt_tunnels/" + TUNNEL_VERSION;
@@ -283,19 +287,20 @@ public class LocalTunnel extends ApiFactory {
 					log.finer("error while waiting");
 				}
 				File cmd_start_js = new File(localTunnelSource, "cmd_start.js");
-				start(nodeBinary.getPath(), cmd_start_js.getPath(), new HashMap<String, String>());
+				start(nodeBinary.getPath(), cmd_start_js.getPath(), params);
 
 			} else {
+			*/
 				Options binarySearchOptions = new Options();
 				String tunnelPath = "/cbt_tunnels/" + TUNNEL_VERSION;
 				binarySearchOptions = binarySearchOptions.setResourcePrefix(tunnelPath.toString()); // instead of using the default /jne we're going to use /cbt_tunnels/v0.1.0
 				File binary = JNE.requireExecutable("cbt_tunnels", binarySearchOptions);
-				start(binary.getPath(), new HashMap<String, String>());
-			}
+				start(binary.getPath(), params);
+			//}
 
 		}
 		else { // use the npm installed version... must be in the PATH
-			start("cbt_tunnels", new HashMap<String, String>());
+			start("cbt_tunnels", params);
 		}
 	}
 

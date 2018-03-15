@@ -230,10 +230,4 @@ public class Selenium extends TestTypeApiFactory{
 		String fullContributer = contributer+contributerVersion+"|v"+pluginVersion;
 		apiSetAction(seleniumTestId, "set_contributer", "contributer", fullContributer);	
 	}
-	public static void main(String[] args) {
-		Selenium s = new Selenium();
-		Screenshots ss = new Screenshots("mikeh", "youllneverknow");
-		System.out.println(s.operatingSystems.get(0).isMobile());
-		System.out.println(ss.operatingSystems.get(0).isMobile());
-	}
 }
