@@ -5,7 +5,7 @@ plugins {
 	id 'com.github.johnrengelman.shadow' version '2.0.2'
 }
 group = 'com.crossbrowsertesting'
-version = '1.4.2'
+version = '1.4.3'
 
 description = """common classes for continuous integration plugins"""
 
