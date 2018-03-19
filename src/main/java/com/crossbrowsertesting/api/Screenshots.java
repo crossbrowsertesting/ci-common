@@ -3,6 +3,7 @@ package com.crossbrowsertesting.api;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.util.*;
@@ -31,8 +32,9 @@ public class Screenshots extends TestTypeApiFactory{
 		json = req.get("/browserlists");
 		log.finest("json = "+ json);
 		try {
-			JSONArray j_browserLists = new JSONArray(json);
-			for (int i = 0; i < j_browserLists.length(); i++) {
+            JSONTokener jt = new JSONTokener(json);
+            JSONArray j_browserLists = new JSONArray(jt);
+            for (int i = 0; i < j_browserLists.length(); i++) {
 				JSONObject j_browserList = j_browserLists.getJSONObject(i);
 				String browser_list_name = j_browserList.getString("browser_list_name");
 				browserLists.add(browser_list_name);
@@ -45,7 +47,8 @@ public class Screenshots extends TestTypeApiFactory{
 		String json="";
 		json = req.get("/loginprofiles/");
 		try {
-			JSONArray j_loginProfiles = new JSONArray(json);
+            JSONTokener jt = new JSONTokener(json);
+            JSONArray j_loginProfiles = new JSONArray(jt);
 			for (int i = 0; i < j_loginProfiles.length(); i++) {
 				JSONObject j_loginProfile = j_loginProfiles.getJSONObject(i);
 				String loginProfileName = j_loginProfile.getString("profile_name");
@@ -60,7 +63,8 @@ public class Screenshots extends TestTypeApiFactory{
 		json = req.get("/seleniumscripts");
 		log.finest("json = "+ json);
 		try {
-			JSONArray j_seleniumScripts = new JSONArray(json);
+            JSONTokener jt = new JSONTokener(json);
+            JSONArray j_seleniumScripts = new JSONArray(jt);
 			for (int i = 0; i < j_seleniumScripts.length(); i++) {
 				JSONObject j_seleniumScript = j_seleniumScripts.getJSONObject(i);
 				String seleniumScriptName = j_seleniumScript.getString("script_name");
