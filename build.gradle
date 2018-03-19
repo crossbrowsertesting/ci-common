@@ -5,7 +5,7 @@ plugins {
 	id 'com.github.johnrengelman.shadow' version '2.0.2'
 }
 group = 'com.crossbrowsertesting'
-version = '1.4.3'
+version = '1.4.4'
 
 description = """common classes for continuous integration plugins"""
 
@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.json', name: 'json', version:'20160810'
+    compile group: 'org.json', name: 'json', version: '20180130'
     compile group: 'commons-codec', name: 'commons-codec', version:'1.9'
 	compile group: 'com.fizzed', name: 'jne', version: '3.0.0'
 	compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.25'
