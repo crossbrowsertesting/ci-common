@@ -5,11 +5,13 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class Screenshots extends TestTypeApiFactory{
 
 	public List<String> browserLists;
 	public List<String> loginProfiles;
+	private final static Logger log = Logger.getLogger(Screenshots.class.getName());
 
 	public Screenshots(String username, String apikey) {
 		super("screenshots", username, apikey);
@@ -26,6 +28,7 @@ public class Screenshots extends TestTypeApiFactory{
 	private void populateBrowserLists() {
 		String json="";
 		json = req.get("/browserlists");
+		log.finest("json = "+ json);
 		JSONArray j_browserLists = new JSONArray(json);
 		for(int i=0; i<j_browserLists.length();i++) {
 			JSONObject j_browserList = j_browserLists.getJSONObject(i);
@@ -36,6 +39,7 @@ public class Screenshots extends TestTypeApiFactory{
 	private void populateSavedLoginProfiles() {
 		String json="";
 		json = req.get("/loginprofiles/");
+		log.finest("json = "+ json);
 		JSONArray j_loginProfiles = new JSONArray(json);
 		for (int i=0; i<j_loginProfiles.length();i++) {
 			JSONObject j_loginProfile = j_loginProfiles.getJSONObject(i);
@@ -46,6 +50,7 @@ public class Screenshots extends TestTypeApiFactory{
 	private void populateSavedSeleniumScripts() {
 		String json="";
 		json = req.get("/seleniumscripts");
+		log.finest("json = "+ json);
 		JSONArray j_seleniumScripts = new JSONArray(json);
 		for (int i=0; i<j_seleniumScripts.length();i++) {
 			JSONObject j_seleniumScript = j_seleniumScripts.getJSONObject(i);

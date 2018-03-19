@@ -64,7 +64,7 @@ public class ScreenshotTest extends APITestFactory {
     }
     @Test
     public void testGetBrowserLists() {
-        if (ss.browserLists.size() > 1) {
+        if (ss.browserLists.size() > 0) {
             for (int i=1; i < ss.browserLists.size();i++) {
                 Assert.assertFalse(ss.browserLists.get(i).isEmpty());
             }
@@ -74,8 +74,9 @@ public class ScreenshotTest extends APITestFactory {
     }
     @Test
     public void testGetLoginProfiles() {
-        if (ss.loginProfiles.size() > 1) {
+        if (ss.loginProfiles.size() > 0) {
             for (int i=1; i < ss.loginProfiles.size();i++) {
+                System.out.println(ss.loginProfiles.get(i));
                 Assert.assertFalse(ss.loginProfiles.get(i).isEmpty());
             }
         } else {

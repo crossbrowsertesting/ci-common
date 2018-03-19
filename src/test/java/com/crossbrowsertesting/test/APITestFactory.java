@@ -1,14 +1,13 @@
 package com.crossbrowsertesting.test;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assume;
-import org.junit.Before;
 import org.junit.BeforeClass;
 
 public abstract class APITestFactory {
 	public static String username;
 	public static String apikey;
+
 
 	@BeforeClass
     public static void getEnvironmentVariables() {
