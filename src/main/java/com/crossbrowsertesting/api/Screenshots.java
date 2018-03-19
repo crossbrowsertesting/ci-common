@@ -1,6 +1,7 @@
 package com.crossbrowsertesting.api;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -29,33 +30,44 @@ public class Screenshots extends TestTypeApiFactory{
 		String json="";
 		json = req.get("/browserlists");
 		log.finest("json = "+ json);
-		JSONArray j_browserLists = new JSONArray(json);
-		for(int i=0; i<j_browserLists.length();i++) {
-			JSONObject j_browserList = j_browserLists.getJSONObject(i);
-			String browser_list_name = j_browserList.getString("browser_list_name");
-			browserLists.add(browser_list_name);
+		try {
+			JSONArray j_browserLists = new JSONArray(json);
+			for (int i = 0; i < j_browserLists.length(); i++) {
+				JSONObject j_browserList = j_browserLists.getJSONObject(i);
+				String browser_list_name = j_browserList.getString("browser_list_name");
+				browserLists.add(browser_list_name);
+			}
+		} catch(JSONException jsone) {
+			log.warning("got error from JSON serialization");
 		}
 	}
 	private void populateSavedLoginProfiles() {
 		String json="";
 		json = req.get("/loginprofiles/");
-		log.finest("json = "+ json);
-		JSONArray j_loginProfiles = new JSONArray(json);
-		for (int i=0; i<j_loginProfiles.length();i++) {
-			JSONObject j_loginProfile = j_loginProfiles.getJSONObject(i);
-			String loginProfileName = j_loginProfile.getString("profile_name");
-			loginProfiles.add(loginProfileName);
+		try {
+			JSONArray j_loginProfiles = new JSONArray(json);
+			for (int i = 0; i < j_loginProfiles.length(); i++) {
+				JSONObject j_loginProfile = j_loginProfiles.getJSONObject(i);
+				String loginProfileName = j_loginProfile.getString("profile_name");
+				loginProfiles.add(loginProfileName);
+			}
+		} catch(JSONException jsone) {
+			log.warning("got error from JSON serialization");
 		}
 	}
 	private void populateSavedSeleniumScripts() {
 		String json="";
 		json = req.get("/seleniumscripts");
 		log.finest("json = "+ json);
-		JSONArray j_seleniumScripts = new JSONArray(json);
-		for (int i=0; i<j_seleniumScripts.length();i++) {
-			JSONObject j_seleniumScript = j_seleniumScripts.getJSONObject(i);
-			String seleniumScriptName = j_seleniumScript.getString("script_name");
-			loginProfiles.add(seleniumScriptName);
+		try {
+			JSONArray j_seleniumScripts = new JSONArray(json);
+			for (int i = 0; i < j_seleniumScripts.length(); i++) {
+				JSONObject j_seleniumScript = j_seleniumScripts.getJSONObject(i);
+				String seleniumScriptName = j_seleniumScript.getString("script_name");
+				loginProfiles.add(seleniumScriptName);
+			}
+		}catch(JSONException jsone) {
+			log.warning("got error from JSON serialization");
 		}
 	}
 	public HashMap<String, String> runScreenshotTest(String selectedBrowserList, String url) {
