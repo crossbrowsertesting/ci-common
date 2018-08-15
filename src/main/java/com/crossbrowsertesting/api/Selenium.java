@@ -18,7 +18,7 @@ public class Selenium extends TestTypeApiFactory{
 	public Selenium() {
 		super("selenium");
 		init();
-		
+
 	}
 	public Selenium(String username, String apikey) {
 		super("selenium", username, apikey);
@@ -185,6 +185,37 @@ public class Selenium extends TestTypeApiFactory{
 		params.put("resolution",resolution);
 		return getSeleniumTestInfo2(params);
 	}
+	public Map<String, String> getSeleniumTestInfoWithJenkinsCaps(String name, String build, String browserApiName, String osApiName, String resolution) throws IOException {
+		// Get the test info history
+		Map<String, String> params = new HashMap<String, String>();
+		OperatingSystem os = operatingSystems2.get(osApiName);
+		if (os != null) {
+			params.put("os", os.getName());
+			params.put("browser", os.browsers2.get(browserApiName).getName());
+		}
+		params.put("resolution",resolution);
+		String historyJson = req.get("", params);
+		JSONObject history = new JSONObject(historyJson);
+		JSONArray seleniumTests = history.getJSONArray("selenium");
+
+		for(int i = 0; i < seleniumTests.length(); i++) {
+			JSONObject test = seleniumTests.getJSONObject(i);
+			JSONObject caps = test.getJSONObject("caps");
+			if(caps.has("jenkinsName") && caps.has("jenkinsBuild")) {
+				String jenkinsName = caps.getString("jenkinsName");
+				String jenkinsBuild = caps.getString("jenkinsBuild");
+				if(jenkinsName.equals(name) && jenkinsBuild.equals(build)) {
+					int seleniumTestId = test.getInt("selenium_test_id");
+					String publicUrl = test.getString("show_result_public_url");
+					Map<String, String> testInfo = new HashMap<String, String>();
+					testInfo.put("selenium_test_id", Integer.toString(seleniumTestId));
+					testInfo.put("show_result_public_url", publicUrl);
+					return testInfo;
+				}
+			}
+		}
+		return null;
+	}
 	private Queue<Map<String, String>> parseIdAndPublicUrl(String json) {
 		//got the test now need to parse out the id and publicUrl
 		JSONObject j = new JSONObject(json);
@@ -201,11 +232,11 @@ public class Selenium extends TestTypeApiFactory{
 		}
 		return tests;
 	}
-	
+
 	private String apiSetAction(String seleniumTestId, String action, String param, String value) throws IOException {
 		/*
 		 * param and value are the additional parameters for actions
-		 * 
+		 *
 		 * example: to set the score as a fail...
 		 * action="set_score", param="score", value="fail"
 		 */
@@ -222,14 +253,14 @@ public class Selenium extends TestTypeApiFactory{
 			apiSetAction(seleniumTestId, "set_score", "score", "pass");
 		} else {
 			apiSetAction(seleniumTestId, "set_score", "score", "fail");
-		}	
+		}
 	}
-	
+
 	public void updateContributer(String seleniumTestId, String contributer, String contributerVersion, String pluginVersion) throws IOException {
 		/*
 		 * contributer looks like "jenkins1.5|v0.21"
 		 */
 		String fullContributer = contributer+contributerVersion+"|v"+pluginVersion;
-		apiSetAction(seleniumTestId, "set_contributer", "contributer", fullContributer);	
+		apiSetAction(seleniumTestId, "set_contributer", "contributer", fullContributer);
 	}
 }
