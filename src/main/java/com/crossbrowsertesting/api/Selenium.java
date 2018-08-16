@@ -201,9 +201,9 @@ public class Selenium extends TestTypeApiFactory{
 		for(int i = 0; i < seleniumTests.length(); i++) {
 			JSONObject test = seleniumTests.getJSONObject(i);
 			JSONObject caps = test.getJSONObject("caps");
-			if(caps.has("jenkinsName") && caps.has("jenkinsBuild")) {
-				String jenkinsName = caps.getString("jenkinsName");
-				String jenkinsBuild = caps.getString("jenkinsBuild");
+			if(caps.has("jenkins_name") && caps.has("jenkins_build")) {
+				String jenkinsName = caps.getString("jenkins_name");
+				String jenkinsBuild = caps.getString("jenkins_build");
 				if(jenkinsName.equals(name) && jenkinsBuild.equals(build)) {
 					int seleniumTestId = test.getInt("selenium_test_id");
 					String publicUrl = test.getString("show_result_public_url");
