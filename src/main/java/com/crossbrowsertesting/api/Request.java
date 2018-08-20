@@ -22,27 +22,27 @@ import org.apache.commons.codec.binary.Base64;
  */
 @Deprecated
 public class Request {
-	
+
 	String username = null;
 	String password = null;
-	
+
 	//proxy settings
 	boolean useProxy = false;
 	String proxyUrl;
 	int proxyPort;
-	boolean useProxyCredentials = false; 
+	boolean useProxyCredentials = false;
 	String proxyUsername;
 	String proxyPassword;
-	
+
 	private String requestURL = "https://crossbrowsertesting.com/api/v3/";
-	
+
 	Request(String path, String username, String password) {
 		this.username = username;
 		this.password = password;
-		
+
 		requestURL += path;
 	}
-	public Request(String path) {		
+	public Request(String path) {
 		requestURL += path;
 	}
 	public void setProxy(String url, int port) {
@@ -55,8 +55,8 @@ public class Request {
 		this.proxyPassword = password;
 		useProxyCredentials = true;
 	}
-	
-	public String get(String urlStr){
+
+	public String get(String urlStr) {
 		/*
 		 * Get request
 		 * returns JSON as a string
@@ -78,7 +78,7 @@ public class Request {
 				conn.setRequestProperty("Authorization", "Basic " + userpassEncoding);
 			}
 			if (conn.getResponseCode() != 200) {
-				throw new IOException(conn.getResponseMessage());
+				throw new IOException("Server Response: " + conn.getResponseCode() + " " + conn.getResponseMessage());
 			}
 			// Buffer the result into a string
 			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -91,7 +91,7 @@ public class Request {
 			conn.disconnect();
 			return sb.toString();
 		} catch(IOException ioe) {
-			return "";
+			return ioe.getMessage();
 		}
 	}
 	public String get(String urlStr, Map<String, String> params){
