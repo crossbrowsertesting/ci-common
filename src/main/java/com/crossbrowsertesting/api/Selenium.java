@@ -170,7 +170,26 @@ public class Selenium extends TestTypeApiFactory{
 	public Queue<Map<String, String>> getSeleniumTestInfo2(Map<String, String> params) throws IOException {
 		// you can use the get request params
 		String json = req.get("", params);
-		return parseIdAndPublicUrl(json);
+		Queue<Map<String, String>> results;
+		try {
+			results = parseIdAndPublicUrl(json);
+		} catch(JSONException e) {
+			// Did not get the json response we expected from the server
+			try {
+				// Try the api call again
+				results = parseIdAndPublicUrl(json);
+			} catch(JSONException e2) {
+				// Failed second time. Return special queue with the error message embedded
+				String message = "Unable to parse response from selenium API:\n" + json;
+
+				Map<String, String> error = new HashMap<String, String>();
+				error.put("error_message", message);
+
+				results = new LinkedList<Map<String, String>>();
+				results.add(error);
+			}
+		}
+		return results;
 	}
 	public Queue<Map<String, String>> getSeleniumTestInfo2(String name, String build, String browserApiName, String osApiName, String resolution) throws IOException {
 		// you can specify the params one at a time
