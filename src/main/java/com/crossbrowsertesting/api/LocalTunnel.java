@@ -26,7 +26,7 @@ public class LocalTunnel extends ApiFactory {
 
 	private final static Logger log = Logger.getLogger(LocalTunnel.class.getName());
 
-	private final String TUNNEL_VERSION = "v0.9.3";
+	private final String TUNNEL_VERSION = "v1.2.2";
 	private final String NODE_VERSION = "v6.11.2";
 	//private Path tunnelPath;
 	
